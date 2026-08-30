@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design handoff reference files (not part of the production site)
+/design_handoff_portfolio_site/

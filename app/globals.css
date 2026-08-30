@@ -1,26 +1,342 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-space-grotesk), Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+
+  --color-bg: #0e0d0c;
+  --color-surface: #100e0d;
+  --color-text-primary: #f2ede4;
+  --color-text-secondary: #b7afa3;
+  --color-text-muted: #a8a095;
+  --color-text-dim: #9e968a;
+  --color-text-faint: #8e867a;
+  --color-accent: #c2603a;
+  --color-accent-light: #e08a5c;
+  --color-accent-glow: #f0b487;
+
+  --breakpoint-mobile: 700px;
+}
+
+/* Width of the content column, per the design handoff. On a wide display the
+   page stays capped here and open space frames it on both sides. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --content-max: 1420px;
+  --content-max-header: 1440px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* The design is authored at full scale, where the 1420px column only sits in
+   generous side margins on a very wide display. Rendering the desktop page at
+   80% reproduces that framing on a normal window: every internal value stays
+   exactly as designed, the whole thing is just drawn smaller. Mobile is left
+   at 1:1 so its 44px tap targets keep their real size. */
+@media (min-width: 701px) {
+  .page-scale {
+    zoom: 0.8;
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* The design leaves line-height at `normal` unless a value is specified;
+     Tailwind's preflight would otherwise impose 1.5 on everything and make
+     every unstyled text block ~25% taller than the reference. */
+  line-height: normal;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(194, 96, 58, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(16px, -20px, 0);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-18px, 16px, 0);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes rail-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(224, 138, 92, 0.55);
+  }
+  72% {
+    box-shadow: 0 0 0 13px rgba(224, 138, 92, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 138, 92, 0);
+  }
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-rise-in {
+  animation: rise-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Glass card surfaces (see README design tokens) */
+.glass {
+  border: 1px solid rgba(242, 237, 228, 0.085);
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.055),
+    rgba(255, 255, 255, 0.016) 46%,
+    rgba(255, 255, 255, 0.005)
+  );
+  backdrop-filter: blur(26px) saturate(150%);
+  -webkit-backdrop-filter: blur(26px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.34),
+    0 34px 76px -44px rgba(0, 0, 0, 0.92);
+}
+
+.glass-accent {
+  border: 1px solid rgba(240, 196, 168, 0.115);
+  background: linear-gradient(
+    160deg,
+    rgba(224, 138, 92, 0.085),
+    rgba(255, 255, 255, 0.022) 44%,
+    rgba(255, 255, 255, 0.006)
+  );
+  backdrop-filter: blur(26px) saturate(150%);
+  -webkit-backdrop-filter: blur(26px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.34),
+    0 34px 76px -44px rgba(0, 0, 0, 0.92);
+}
+
+.glass-hover {
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-hover:hover {
+  transform: translateY(-4px);
+  border-color: rgba(224, 138, 92, 0.34);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.9);
+}
+
+/* Same idea, no lift — used on cards that are themselves a click target
+   (e.g. the experience accordion), so hovering shouldn't feel draggable. */
+.glass-hover-static {
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-hover-static:hover {
+  border-color: rgba(224, 138, 92, 0.34);
+  box-shadow: 0 26px 54px -30px rgba(0, 0, 0, 0.9);
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Some cards drop their glass chrome entirely below 700px (hero text panel,
+   writing list rows). Tailwind's `max-[700px]:border-none` etc. can't win
+   against .glass/.glass-accent — both are plain classes, but Tailwind's
+   utilities live inside an @layer, and unlayered rules always beat layered
+   ones regardless of specificity — so the reset has to be unlayered too. */
+@media (max-width: 700px) {
+  .glass-flat-mobile {
+    border: none;
+    background: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Experience card: header/description/chips grid that restructures at 700px
+   (desc + chips break out of the title column to full card width, date moves
+   under the title, chevron disappears) — done with grid-template-areas so no
+   DOM re-parenting is needed, unlike the prototype's JS style overrides. */
+.exp-grid {
+  display: grid;
+  grid-template-columns: 54px 1fr auto 34px;
+  /* The chevron spans every row so its 34px box never dictates the height of
+     the title row — in the design it sits beside the whole block, not in it. */
+  grid-template-areas:
+    "icon title date chev"
+    "icon desc  .    chev"
+    ".    chips .    chev";
+  column-gap: 22px;
+  /* title -> description is 6px in the design; description -> chips is 11px,
+     made up by the extra margin on .exp-chips below. */
+  row-gap: 6px;
+  align-items: start;
+  padding: 26px 30px;
+}
+
+.exp-grid .exp-icon {
+  grid-area: icon;
+}
+.exp-grid .exp-title {
+  grid-area: title;
+}
+.exp-grid .exp-date {
+  grid-area: date;
+}
+.exp-grid .exp-chev {
+  grid-area: chev;
+  align-self: start;
+}
+.exp-grid .exp-desc {
+  grid-area: desc;
+}
+.exp-grid .exp-chips {
+  grid-area: chips;
+  margin-top: 5px;
+}
+
+@media (max-width: 700px) {
+  .exp-grid {
+    grid-template-columns: 30px 1fr;
+    grid-template-areas:
+      "icon title"
+      "icon date"
+      "desc desc"
+      "chips chips";
+    column-gap: 8px;
+    row-gap: 0;
+    padding: 14px 14px 14px;
+  }
+  .exp-grid .exp-desc {
+    margin-top: 15px;
+  }
+  .exp-grid .exp-chips {
+    margin-top: 13px;
+  }
+  .exp-grid .exp-chev {
+    display: none;
+  }
+  .exp-grid .exp-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.line-clamp-2-mask {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, 0.35));
+  mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, 0.35));
+}
+
+/* Below 700px, project/writing card descriptions clamp to two lines with a
+   fade mask; above it they render in full (see README mobile spec). */
+@media (max-width: 700px) {
+  .clamp-mobile-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, 0.35));
+    mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, 0.35));
+  }
+
+  .clamp-mobile-2-tight {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, #000 62%, rgba(0, 0, 0, 0.42));
+    mask-image: linear-gradient(180deg, #000 62%, rgba(0, 0, 0, 0.42));
+  }
 }
