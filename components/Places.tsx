@@ -1,0 +1,144 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { useReveal } from "@/hooks/useReveal";
+import { ImageSlot } from "./ImageSlot";
+
+const PLACE_COUNT = 8;
+const SPEED_PX_S = 30;
+
+export function Places() {
+  const sectionRef = useReveal<HTMLElement>();
+  const trackRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const firstCardRef = useRef<HTMLDivElement>(null);
+
+  const offsetRef = useRef(0);
+  const velocityRef = useRef(0);
+  const draggingRef = useRef(false);
+  const hoveringRef = useRef(false);
+  const lastXRef = useRef(0);
+  const lastTimeRef = useRef(0);
+  const halfWidthRef = useRef(1);
+  const isTouchRef = useRef(false);
+
+  useEffect(() => {
+    isTouchRef.current = window.matchMedia("(hover: none)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const measure = () => {
+      if (trackRef.current) {
+        halfWidthRef.current = trackRef.current.scrollWidth / 2 || 1;
+      }
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (firstCardRef.current) ro.observe(firstCardRef.current);
+    if (stripRef.current) ro.observe(stripRef.current);
+
+    let raf = 0;
+    let last = performance.now();
+
+    const frame = (now: number) => {
+      const dt = now - last;
+      last = now;
+
+      if (!draggingRef.current) {
+        if (Math.abs(velocityRef.current) > 0.01) {
+          offsetRef.current += velocityRef.current * dt;
+          velocityRef.current *= Math.pow(0.94, dt / 16.7);
+        } else if (!prefersReduced && !isTouchRef.current && !hoveringRef.current) {
+          offsetRef.current += (SPEED_PX_S * dt) / 1000;
+        }
+      }
+
+      const half = halfWidthRef.current;
+      offsetRef.current = ((offsetRef.current % half) + half) % half;
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(-${offsetRef.current}px)`;
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    draggingRef.current = true;
+    velocityRef.current = 0;
+    lastXRef.current = e.clientX;
+    lastTimeRef.current = performance.now();
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    if (stripRef.current) stripRef.current.style.cursor = "grabbing";
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!draggingRef.current) return;
+    const now = performance.now();
+    const dx = e.clientX - lastXRef.current;
+    const dt = Math.max(now - lastTimeRef.current, 1);
+    offsetRef.current -= dx;
+    velocityRef.current = -dx / dt;
+    lastXRef.current = e.clientX;
+    lastTimeRef.current = now;
+  };
+
+  const endDrag = () => {
+    draggingRef.current = false;
+    if (stripRef.current) stripRef.current.style.cursor = "grab";
+  };
+
+  const cards = Array.from({ length: PLACE_COUNT * 2 }, (_, i) => i);
+
+  return (
+    <section id="places" ref={sectionRef} className="reveal flex flex-col gap-[26px]">
+      <div className="flex flex-wrap items-baseline justify-between gap-5 px-1 pt-1">
+        <div>
+          <p className="m-0 mb-[9px] font-mono text-[11px] tracking-[0.12em] text-text-faint uppercase">
+            04 — Off the clock
+          </p>
+          <h2 className="m-0 mb-[10px] text-[clamp(28px,3vw,40px)] font-semibold tracking-[-0.035em]">
+            Places that made me stop
+          </h2>
+          <p className="text-pretty m-0 max-w-[min(46ch,100%)] text-[15.5px] leading-[1.65] text-text-muted">
+            Between commits, I go outside. Some of what I brought back.
+          </p>
+        </div>
+        <p className="m-0 font-mono text-[11px] text-text-faint max-[700px]:hidden">drag or swipe to browse</p>
+      </div>
+
+      <div
+        ref={stripRef}
+        className="relative h-[clamp(260px,29vw,360px)] cursor-grab touch-pan-y overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_9%,#000_91%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_9%,#000_91%,transparent)] max-[700px]:mx-[-16px] max-[700px]:h-[176px] max-[700px]:w-[calc(100%+32px)] max-[700px]:[mask-image:none] max-[700px]:[-webkit-mask-image:none]"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={() => {
+          hoveringRef.current = false;
+          if (draggingRef.current) endDrag();
+        }}
+        onPointerEnter={() => {
+          hoveringRef.current = true;
+        }}
+      >
+        <div ref={trackRef} className="absolute top-0 left-0 flex h-full gap-[18px] will-change-transform max-[700px]:gap-[11px]">
+          {cards.map((i) => (
+            <div
+              key={i}
+              ref={i === 0 ? firstCardRef : undefined}
+              className="h-full w-[clamp(195px,21.5vw,270px)] shrink-0 overflow-hidden rounded-[18px] border border-[rgba(242,237,228,0.10)] shadow-[0_24px_54px_-38px_rgba(0,0,0,0.9)] max-[700px]:w-[132px] max-[700px]:rounded-[14px]"
+            >
+              <div className="pointer-events-none relative h-full w-full">
+                <ImageSlot label="Drop a photo" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
