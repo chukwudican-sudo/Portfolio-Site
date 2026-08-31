@@ -42,3 +42,8 @@ next-env.d.ts
 
 # design handoff reference files (not part of the production site)
 /design_handoff_portfolio_site/
+/design_handoff_portfolio_site*/
+
+# source assets for the hero portrait bake — large, and only needed to re-run
+# `npm run bake:head`. The shipped artefact is public/assets/head-cloud.bin
+/assets-src/

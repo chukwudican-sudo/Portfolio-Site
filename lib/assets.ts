@@ -21,7 +21,7 @@ function firstExisting(names: string[]): string | null {
  */
 export function getPortraitAssets(): { photo: string | null; depth: string | null } {
   return {
-    photo: firstExisting(["head-photo.png", "head-photo.jpg", "head-photo.jpeg", "head-photo.webp"]),
-    depth: firstExisting(["head-depth.png", "head-depth.jpg"]),
+    photo: firstExisting(["head-photo.jpg", "head-photo.png", "head-photo.jpeg"]),
+    depth: firstExisting(["head-depth.png"]),
   };
 }
