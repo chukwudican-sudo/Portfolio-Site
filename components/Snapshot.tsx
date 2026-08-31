@@ -77,7 +77,7 @@ export function Snapshot() {
           <div className="glass-accent flex flex-1 flex-col justify-center gap-1.5 rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:px-4 max-[700px]:py-5">
             <CardEyebrow icon={<CodeIcon />}>Lines of code</CardEyebrow>
             <StatNumber
-              end={42318}
+              end={52110}
               className="m-0 mt-1.5 text-[clamp(30px,3.4vw,44px)] leading-none font-medium tracking-[-0.035em] text-text-primary max-[700px]:text-[32px]"
             />
           </div>

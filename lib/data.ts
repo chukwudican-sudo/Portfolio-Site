@@ -1,11 +1,14 @@
 export type Project = {
   id: string;
   title: string;
+  /** Short descriptor shown after the name, e.g. "AI Resume Tailoring". */
+  subtitle: string;
   badge: string;
   description: string;
   bullets: string[];
-  whatBroke: string;
-  whatIdDoDifferently: string;
+  /** Optional: personal post-mortems. Left out rather than invented. */
+  whatBroke?: string;
+  whatIdDoDifferently?: string;
   tech: string[];
   tags: string[];
   href: string;
@@ -14,59 +17,96 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    id: "fraudwatch",
-    title: "FraudWatch",
-    badge: "Spring Boot",
+    id: "resumi",
+    title: "Resumi",
+    subtitle: "AI Resume Tailoring",
+    badge: "Next.js",
     description:
-      "A rule-based fraud detection service that scores transactions against configurable rules and explains every decision it makes.",
+      "An AI resume-tailoring platform. Four Claude call modes run under forced tool-use, so the model returns schema-constrained JSON rather than free text that has to be parsed and hoped over.",
     bullets: [
-      "Every flag carries its triggering rule, so a reviewer never has to guess.",
-      "Rule changes ship as config, not deploys, so tuning a threshold doesn't need a release.",
+      "Four REST endpoints backing four call modes — extract, extract_resume, tailor, instruct — each guaranteed to return valid typed data.",
+      "A pure-function LaTeX engine decouples content from formatting; single-pass escaping means user content can never break out of the document structure.",
+      "Server-side DOCX parsing written from scratch on JSZip and @xmldom/xmldom, with no third-party DOCX library.",
+      "A mock mode (RESUMI_MOCK=1) exercises the whole app end to end without touching the Claude API or costing anything.",
     ],
     whatBroke:
-      "Rules evaluated first-match-wins, so a broad velocity rule kept swallowing flags a sharper rule should have owned — reviewers saw the wrong reason.",
-    whatIdDoDifferently:
-      "Sum weighted contributions instead of stopping at the first hit, and version rule sets so every change is reviewable after the fact.",
-    tech: ["Java", "PostgreSQL", "Docker"],
-    tags: ["backend", "security"],
+      "React's asynchronous state updates let a user navigate away before a write to localStorage had actually landed, so work silently disappeared. Fixed by making persistence synchronous and ordering it ahead of the state update.",
+    tech: ["TypeScript", "Next.js", "Node.js", "Claude API", "LaTeX"],
+    tags: ["frontend", "ai", "backend"],
     href: "https://github.com/chukwudican-sudo",
     span: "wide",
   },
   {
-    id: "resumi",
-    title: "Resumi",
-    badge: "Next.js",
+    id: "mealapp",
+    title: "MealApp",
+    subtitle: "Offline-First Nutrition",
+    badge: "Offline-first",
     description:
-      "An AI resume tool that rewrites bullets against a job posting, with strictly-typed contracts between model output and UI.",
+      "An offline-first nutrition app on a 17-table PostgreSQL schema, with Row-Level Security enforced at the database — so per-user isolation holds regardless of what the client sends.",
     bullets: [
-      "Schema validation on every response — malformed output never reaches the page.",
-      "10 active users, roughly 2,000 visitors since launch.",
+      "A durable outbox queues writes locally with request coalescing, exponential backoff and dead-lettering, and dependency-aware ordering so a record never syncs before the one it depends on.",
+      "Eight AI Edge Functions on Deno use schema-constrained output; meal recommendations separate hard rules — dietary restrictions, always enforced — from soft preferences.",
+      "An ETL pipeline imported 8,187 USDA records across 41 paginated requests, then deduplicated and categorised them.",
+      "Freemium entitlements resolve through an atomic Postgres RPC, so concurrent purchase attempts can't race.",
     ],
     whatBroke:
-      "The model returned well-formed JSON with invented fields, and the UI rendered empty bullets for a week before I rejected off-schema responses.",
-    whatIdDoDifferently:
-      "Cache rewrites per posting — most of the cost was re-running prompts that had already been answered.",
-    tech: ["TypeScript", "FastAPI", "Supabase"],
+      "The retry scheduler had a timing flaw that made recovery from a failed sync take 30–45 seconds. Tracing the scheduling logic brought it down to 1–2.",
+    tech: ["React Native", "Expo", "TypeScript", "Supabase", "Gemini API"],
     tags: ["frontend", "ai", "backend"],
     href: "https://github.com/chukwudican-sudo",
     span: "narrow",
   },
   {
-    id: "mealapp",
-    title: "MealApp",
-    badge: "Offline-first",
+    id: "fraudwatch",
+    title: "FraudWatch",
+    subtitle: "Fraud & Anomaly Detection",
+    badge: "Java",
     description:
-      "A meal planning app for people with bad kitchen wifi. The screens were the easy part — the real problem was reconciling edits made while offline.",
+      "A live fraud and anomaly-detection dashboard, built as backend lead on a three-person team running a genuine two-week Agile sprint.",
     bullets: [
-      "Last-write-wins per field rather than per record, so two devices rarely clobber each other.",
-      "Queued mutations replay in order on reconnect, with conflicts surfaced instead of hidden.",
+      "Three detection algorithms: unusual amount measured against an account's historical average, impossible travel between two geographically incompatible transactions, and a sliding-window frequency check.",
+      "Owned the shared data contract between three independently built components — detection service, data simulator and dashboard.",
+      "GitHub Actions CI running the full test suite on every push.",
+    ],
+    tech: ["Java", "REST API", "GitHub Actions"],
+    tags: ["backend"],
+    href: "https://github.com/chukwudican-sudo",
+    span: "wide",
+  },
+  {
+    id: "rate-limit-lab",
+    title: "Rate Limit Lab",
+    subtitle: "Backend Systems Study",
+    badge: "FastAPI",
+    description:
+      "Token Bucket, Leaky Bucket and Sliding Window implemented as independent classes behind one interface, with a traffic simulator and a comparison chart.",
+    bullets: [
+      "Built deliberately to close a gap — Python kept appearing in job postings and I had nothing to show for it.",
+      "A simulation engine models a quiet period, a 40-request burst, then recovery; matplotlib charts how each algorithm responds.",
+      "16 pytest tests covering limit enforcement, refill and leak timing, and window-expiry edges — verified live against a running server with curl.",
     ],
     whatBroke:
-      "Per-record last-write-wins wiped a full day of edits the first time I tested on two devices.",
-    whatIdDoDifferently:
-      "Per-field timestamps from day one, plus a local change log I can replay when a sync goes wrong.",
-    tech: ["React", "Python", "PostgreSQL"],
-    tags: ["frontend", "backend"],
+      "Lazy initialisation defaulted an algorithm's internal state to wall-clock time instead of the first actually-observed request. Subtle, but a real correctness bug — diagnosed, fixed, and written up as a case study.",
+    tech: ["Python", "FastAPI", "pytest", "matplotlib"],
+    tags: ["backend"],
+    href: "https://github.com/chukwudican-sudo/rate-limit-lab",
+    span: "narrow",
+  },
+  {
+    id: "kudi-kitchen",
+    title: "Kudi Kitchen",
+    subtitle: "E-Commerce & Security",
+    badge: "No framework",
+    description:
+      "A hand-coded storefront with no framework and no build step, replacing an earlier Shopify build for full control over design and performance — plus a fully built review and moderation subsystem.",
+    bullets: [
+      "678 lines of HTML, 2,926 of CSS and 863 of JS, driven by a custom design-token system, with IntersectionObserver scroll reveals and full prefers-reduced-motion support.",
+      "Stripe Apple and Google Pay via the Payment Request API, backed by a Cloudflare Worker that re-verifies status, amount and currency with Stripe before releasing the download — the server never trusts a client-reported success.",
+      "A built-but-dormant review system: advisory-lock rate limiting, peppered SHA-256 fingerprinting rather than raw email or IP, fully revoked default grants, and magic-byte validation that checks file content instead of declared MIME type.",
+      "11 architecture decision records documenting the reasoning behind every major call.",
+    ],
+    tech: ["HTML/CSS/JS", "Stripe", "Cloudflare Workers", "Supabase", "Deno"],
+    tags: ["frontend", "backend", "security"],
     href: "https://github.com/chukwudican-sudo",
     span: "full",
   },
@@ -98,46 +138,40 @@ export const experience: ExperienceRole[] = [
   {
     id: "kudi-kitchen",
     mark: "KK",
-    title: "Founder & Full-Stack Developer",
+    title: "Founder & Digital Creator",
     company: "Kudi Kitchen",
     description:
-      "Own a custom e-commerce platform end to end — storefront, payments, and the backend that verifies them.",
+      "Founded and independently run a direct-to-consumer digital product business — a cookbook e-commerce site.",
     date: "Mar 2025 — Present",
-    chips: ["JavaScript", "Stripe", "Cloudflare Workers", "Supabase", "Row-Level Security"],
-    location: "Oshawa, ON · Remote",
+    chips: ["HTML/CSS/JS", "Stripe", "Cloudflare Workers", "Supabase", "Row-Level Security"],
+    location: "Oshawa, ON",
     bullets: [
-      "Replaced an earlier Shopify build with a hand-rolled storefront, for control over both the experience and the architecture.",
-      "Stripe payments with Apple Pay and Google Pay — a Cloudflare Worker creates PaymentIntents server-side and re-verifies status, amount, and currency before any digital product is delivered.",
-      "Supabase/PostgreSQL review and moderation backend: Row-Level Security, Deno Edge Functions, rate limiting, database constraints, privacy-preserving request fingerprinting, and file validation.",
-      "Accessibility-conscious frontend — reduced-motion support and a reusable design-token system.",
-      "11 Architecture Decision Records covering the calls that shaped it.",
+      "Rebuilt the storefront from Shopify to a fully hand-coded, framework-free HTML/CSS/JS site, for complete control over design and performance.",
+      "Integrated Stripe payments, including a serverless Apple Pay and Google Pay flow via Cloudflare Workers that independently re-verifies payment status server-side before releasing the product.",
+      "Used conversion tracking and checkout-flow analysis to raise checkout completion by 15–25%.",
+      "Documented every architecture and design decision across 11 written ADRs.",
     ],
     stats: [
       { value: "11", label: "ADRs written" },
-      { value: "1,000+", label: "users served" },
-      { value: "15–25%", label: "conversion lift, Shopify era" },
+      { value: "15–25%", label: "checkout completion lift" },
     ],
   },
   {
-    id: "aegon",
-    mark: "AE",
-    title: "Wealth Manager",
-    company: "Aegon",
-    description: "Managed client portfolios, led a 20-advisor team, and owned compliance reporting.",
-    date: "May 2025 — Aug 2026",
-    chips: ["Portfolio management", "Team leadership", "Compliance reporting", "Client advisory"],
-    location: "Oshawa, ON · Remote",
+    id: "droady",
+    mark: "DR",
+    title: "Software Engineer",
+    company: "Droady",
+    description:
+      "Contributed to a production iOS and Android fitness app with AI features, a creator marketplace, and real-time social systems.",
+    date: "Nov 2025 — May 2026",
+    chips: ["React Native", "AI/LLM", "Stripe", "RevenueCat"],
+    location: "San Francisco, CA",
     bullets: [
-      "Managed and monitored client investment portfolios, matching recommendations to each client's risk profile and goals.",
-      "Led and trained a team of 20+ advisors through business conventions and weekly strategy sessions.",
-      "Held a 95% client retention rate through consistent follow-up and plain-language communication.",
-      "Prepared structured financial summaries against internal policy and regulatory standards — where I learned why auditable, reason-carrying systems matter.",
+      "Contributed to Droady's AI physique-rating feature, integrating an LLM into a live, customer-facing product.",
+      "Contributed to payment integration using Stripe and RevenueCat for subscription billing.",
+      "Worked across mobile, backend and web alongside a small engineering team, from active development through App Store launch.",
     ],
-    stats: [
-      { value: "20+", label: "advisors led" },
-      { value: "95%", label: "client retention" },
-      { value: "40+", label: "client portfolios" },
-    ],
+    stats: [],
   },
   {
     id: "freelance",
@@ -150,7 +184,6 @@ export const experience: ExperienceRole[] = [
     location: "Oshawa, ON · Remote",
     bullets: [
       "Designed and launched African Family Connect's community site — event promotion, registration workflows, photo galleries, and ongoing maintenance.",
-      "Built a Next.js landing page for Droady, a live fitness app on the App Store.",
       "Ran an 84-page website and UX audit for Konnecting Wit Humanity, covering accessibility, mobile responsiveness, navigation, and information architecture.",
       "Translated client business requirements into concrete website and UX decisions.",
     ],
@@ -160,20 +193,42 @@ export const experience: ExperienceRole[] = [
     ],
   },
   {
+    id: "aegon",
+    mark: "AE",
+    title: "Wealth Manager",
+    company: "Aegon",
+    description:
+      "Managed client investment portfolios, led a 20-advisor team, and owned compliance reporting.",
+    date: "May 2025 — Aug 2025",
+    chips: ["Portfolio management", "Team leadership", "Compliance reporting", "Client advisory"],
+    location: "Oshawa, ON",
+    bullets: [
+      "Managed client investment portfolios, achieving 12–18% average annual growth by aligning strategy with each client's risk profile.",
+      "Led and coordinated a team of 20+ advisors, delivering training and strategic guidance at conventions and weekly strategy sessions.",
+      "Maintained a 95% client retention rate through consistent communication and timely follow-up.",
+      "Prepared structured financial reports while ensuring compliance with internal policy and regulatory standards.",
+    ],
+    stats: [
+      { value: "12–18%", label: "avg. annual growth" },
+      { value: "20+", label: "advisors led" },
+      { value: "95%", label: "client retention" },
+    ],
+  },
+  {
     id: "westernbell",
     mark: "WB",
-    title: "Managerial Intern",
+    title: "Operations & Client Engagement",
     company: "WesternBell International",
-    description: "Built and shipped the company site, then ran inventory and client delivery alongside it.",
+    description:
+      "Built and shipped the company site, then ran inventory and client delivery alongside it.",
     date: "Jun 2024 — Jan 2025",
     chips: ["HTML/CSS", "Live chat", "Microsoft Excel", "Business development"],
     location: "Port Harcourt, Nigeria",
     locationHref: "https://westernbell.com",
     bullets: [
-      "Built and deployed the company website and integrated live chat, cutting average client response time by 50%.",
-      "Maintained Excel-based inventory and procurement tracking for 200+ industrial gas cylinders across enterprise partners.",
-      "Supported client engagement, contract execution, and operational delivery — contributing to a 30% increase in new business.",
-      "Took part in international partner outreach and business development.",
+      "Built and deployed the company website end to end and integrated a live chat system, cutting client response time by 50%.",
+      "Maintained inventory and procurement documentation for 200+ industrial gas cylinders across enterprise partners.",
+      "Contributed to a 30% increase in new business through client engagement, contract execution, and operational delivery.",
     ],
     stats: [
       { value: "50%", label: "faster response" },
@@ -186,7 +241,8 @@ export const experience: ExperienceRole[] = [
     mark: "FT",
     title: "Fitness Trainer",
     company: "Self-employed",
-    description: "Ran a one-on-one training practice end to end — coaching, scheduling, and client acquisition.",
+    description:
+      "Ran a one-on-one training practice end to end — coaching, scheduling, and client acquisition.",
     date: "Apr 2023 — Jan 2024",
     chips: ["Coaching", "Programming", "Client management"],
     location: "Oshawa, ON",

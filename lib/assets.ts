@@ -25,3 +25,21 @@ export function getPortraitAssets(): { photo: string | null; depth: string | nul
     depth: firstExisting(["head-depth.png"]),
   };
 }
+
+/**
+ * Which roles have a prepared logo. Resolved on the server so a missing file
+ * simply falls back to the initials tile, with no 404 in the console.
+ */
+export function getRoleLogos(ids: string[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const id of ids) {
+    try {
+      if (fs.existsSync(path.join(ASSET_DIR, "logos", `${id}.png`))) {
+        out[id] = `/assets/logos/${id}.png`;
+      }
+    } catch {
+      /* unreadable dir — treat as absent */
+    }
+  }
+  return out;
+}

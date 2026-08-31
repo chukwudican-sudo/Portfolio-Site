@@ -1,14 +1,19 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
 import { experience } from "@/lib/data";
 import { ExperienceCard } from "./ExperienceCard";
+import { Overlay } from "./Overlay";
 
 const RAIL_PAD = 6;
 
-export function ExperienceSection() {
-  const [openId, setOpenId] = useState<string | null>(experience[0]?.id ?? null);
+export function ExperienceSection({ logos = {} }: { logos?: Record<string, string> }) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const savedScroll = useRef(0);
+  const openerRef = useRef<HTMLElement | null>(null);
+  const wasOpen = useRef(false);
   const sectionRef = useReveal<HTMLElement>();
   const railRef = useRef<HTMLDivElement>(null);
   const trailRef = useRef<HTMLSpanElement>(null);
@@ -90,7 +95,49 @@ export function ExperienceSection() {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
     };
+  }, []);
+
+  // Track the breakpoint in state so the overlay picks its presentation
+  // declaratively rather than reading innerWidth mid-render.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 700px)");
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  // Crossing the breakpoint while open would leave a phone-styled view in a
+  // desktop viewport, so close and reopen the same role on the other side.
+  useEffect(() => {
+    if (!openId) return;
+    const id = openId;
+    setOpenId(null);
+    const t = window.setTimeout(() => setOpenId(id), 0);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile]);
+
+  // Guarded on the previous value, or this fires on mount and jumps to the top.
+  useEffect(() => {
+    if (openId) {
+      wasOpen.current = true;
+      return;
+    }
+    if (!wasOpen.current) return;
+    wasOpen.current = false;
+    window.scrollTo(0, savedScroll.current);
+    openerRef.current?.focus?.();
   }, [openId]);
+
+  const openRole = experience.find((r) => r.id === openId) ?? null;
+
+  const handleOpen = (id: string, i: number) => {
+    savedScroll.current = window.scrollY;
+    openerRef.current = document.activeElement as HTMLElement | null;
+    setOpenId(id);
+    pulseDot(i);
+  };
 
   const pulseDot = (i: number) => {
     const dot = dotEls.current[i];
@@ -159,12 +206,8 @@ export function ExperienceSection() {
             <ExperienceCard
               key={role.id}
               role={role}
-              isOpen={role.id === openId}
-              onToggle={() => {
-                const opening = openId !== role.id;
-                setOpenId(opening ? role.id : null);
-                if (opening) pulseDot(i);
-              }}
+              logo={logos[role.id]}
+              onOpen={(id) => handleOpen(id, i)}
               markRef={(el) => {
                 markEls.current[role.id] = el;
               }}
@@ -172,6 +215,18 @@ export function ExperienceSection() {
           ))}
         </div>
       </div>
+
+      {openRole && (
+        <Overlay
+          label={`${openRole.title} at ${openRole.company}`}
+          isMobile={isMobile}
+          backLabel="All roles"
+          width={760}
+          onClose={() => setOpenId(null)}
+        >
+          <ExperienceCard role={openRole} logo={logos[openRole.id]} expanded />
+        </Overlay>
+      )}
     </section>
   );
 }

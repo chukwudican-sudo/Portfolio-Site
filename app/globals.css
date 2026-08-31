@@ -4,7 +4,7 @@
   --font-sans: var(--font-space-grotesk), Helvetica, Arial, sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
 
-  --color-bg: #0e0d0c;
+  --color-bg: #070605;
   --color-surface: #100e0d;
   --color-text-primary: #f2ede4;
   --color-text-secondary: #b7afa3;
@@ -21,20 +21,15 @@
 /* Width of the content column, per the design handoff. On a wide display the
    page stays capped here and open space frames it on both sides. */
 :root {
-  --content-max: 1420px;
-  --content-max-header: 1440px;
+  --content-max: 1140px;
+  --content-max-header: 1160px;
 }
 
-/* The design is authored at full scale, where the 1420px column only sits in
-   generous side margins on a very wide display. Rendering the desktop page at
-   80% reproduces that framing on a normal window: every internal value stays
-   exactly as designed, the whole thing is just drawn smaller. Mobile is left
-   at 1:1 so its 44px tap targets keep their real size. */
-@media (min-width: 701px) {
-  .page-scale {
-    zoom: 0.8;
-  }
-}
+/* The page used to render at zoom:0.8 to get a narrow column on a normal
+   window. That also shrank every font by 20%, and made pointer coordinates
+   disagree with element coordinates in anything using position:fixed or
+   getBoundingClientRect. The column is narrowed directly instead — same
+   framing, type at its authored size, no coordinate-space mismatch. */
 
 html {
   scroll-behavior: smooth;
@@ -222,9 +217,149 @@ a {
   box-shadow: 0 26px 54px -30px rgba(0, 0, 0, 0.9);
 }
 
+
+/* Border beam: a highlight that travels around an element's outline.
+   A conic gradient is rotated by animating a registered custom property, then
+   masked to just the border ring — so it rides the shape whatever its radius,
+   and costs one compositor-friendly paint rather than a JS loop. */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.beam {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Two layers on the same angle: a crisp ring, and a blurred copy behind it for
+   the halo. On a saturated fill a hairline alone has almost no contrast. */
+.beam::before,
+.beam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px; /* ring thickness */
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0deg,
+    transparent 268deg,
+    rgba(255, 236, 220, 0.35) 300deg,
+    rgba(255, 252, 248, 1) 338deg,
+    rgba(255, 236, 220, 0.35) 352deg,
+    transparent 360deg
+  );
+  /* keep only the ring: full box minus the content box */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: beam-spin 6s linear infinite;
+  pointer-events: none;
+}
+
+.beam::before {
+  z-index: 2;
+}
+
+/* the halo — same sweep, blurred and pushed out slightly */
+.beam::after {
+  inset: -2px;
+  padding: 4px;
+  filter: blur(5px);
+  opacity: 0.85;
+  z-index: 1;
+}
+
+@keyframes beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+
+/* Skill chips — brushed metal.
+   Four cues do the work: a vertical value gradient (light above, dark below),
+   a bright top edge reading as specular, a dark bottom edge reading as
+   occlusion, and a soft diagonal sheen across the face. Kept neutral so it
+   reads as metal beside the terracotta accents rather than competing with
+   them; it warms toward the accent only when its card is hovered. */
+.chip {
+  position: relative;
+  isolation: isolate;
+  border-radius: 8px;
+  border: 1px solid rgba(242, 237, 228, 0.1);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.09) 0%,
+      rgba(255, 255, 255, 0.028) 45%,
+      rgba(0, 0, 0, 0.05) 100%
+    ),
+    rgba(242, 237, 228, 0.035);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.32);
+  color: #D8D0C4;
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* the sheen: a narrow diagonal band, never strong enough to read as a stripe */
+.chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    128deg,
+    transparent 18%,
+    rgba(255, 255, 255, 0.07) 42%,
+    rgba(255, 255, 255, 0.02) 54%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.group:hover .chip {
+  border-color: rgba(224, 138, 92, 0.28);
+  color: #F2EDE4;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.38);
+}
+
 .text-pretty {
   text-wrap: pretty;
 }
+
+/* Resting project card: the description is a teaser. The fade that goes with
+   it is applied in JS only when the text is genuinely clamped — see
+   hooks/useOverflowMask.ts. */
+.clamp-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 700px) {
+  .clamp-desc {
+    -webkit-line-clamp: 2;
+  }
+}
+
 
 /* Some cards drop their glass chrome entirely below 700px (hero text panel,
    writing list rows). Tailwind's `max-[700px]:border-none` etc. can't win

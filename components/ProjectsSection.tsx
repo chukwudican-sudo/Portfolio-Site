@@ -4,13 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
 import { filters, projects } from "@/lib/data";
 import { ProjectCard } from "./ProjectCard";
-import { ProjectDetail } from "./ProjectDetail";
+import { ProjectOverlay } from "./ProjectOverlay";
 
 export function ProjectsSection() {
   const sectionRef = useReveal<HTMLElement>();
   const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]["id"]>("all");
   const [openProjectId, setOpenProjectId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const savedScroll = useRef(0);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   const filtered =
     activeFilter === "all" ? projects : projects.filter((p) => p.tags.includes(activeFilter));
@@ -19,6 +21,7 @@ export function ProjectsSection() {
 
   const handleOpen = (id: string) => {
     savedScroll.current = window.scrollY;
+    openerRef.current = document.activeElement as HTMLElement | null;
     setOpenProjectId(id);
   };
 
@@ -26,16 +29,39 @@ export function ProjectsSection() {
     setOpenProjectId(null);
   };
 
+  // Track the breakpoint in state so the overlay picks its presentation
+  // declaratively rather than reading innerWidth mid-render.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 700px)");
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  // Crossing the breakpoint while open would leave a phone-styled view in a
+  // desktop viewport, so close and reopen the same project on the other side.
+  useEffect(() => {
+    if (!openProjectId) return;
+    const id = openProjectId;
+    setOpenProjectId(null);
+    const t = window.setTimeout(() => setOpenProjectId(id), 0);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile]);
+
+  // Restore scroll and focus when the overlay closes — guarded on the previous
+  // value, or this fires on mount and jumps the page to the top on load.
+  const wasOpen = useRef(false);
   useEffect(() => {
     if (openProjectId) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-      window.scrollTo(0, savedScroll.current);
+      wasOpen.current = true;
+      return;
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    if (!wasOpen.current) return;
+    wasOpen.current = false;
+    window.scrollTo(0, savedScroll.current);
+    openerRef.current?.focus?.();
   }, [openProjectId]);
 
   return (
@@ -77,7 +103,9 @@ export function ProjectsSection() {
         ))}
       </div>
 
-      {openProject && <ProjectDetail project={openProject} onClose={handleClose} />}
+      {openProject && (
+        <ProjectOverlay project={openProject} isMobile={isMobile} onClose={handleClose} />
+      )}
     </section>
   );
 }
