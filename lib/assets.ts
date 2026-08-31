@@ -43,3 +43,31 @@ export function getRoleLogos(ids: string[]): Record<string, string> {
   }
   return out;
 }
+
+/**
+ * The prepared Places photos, shuffled so the strip doesn't read as the order
+ * they happened to sit in on disk.
+ *
+ * Shuffled here on the server rather than in the component: the client receives
+ * the finished array as a prop, so the markup React hydrates against matches
+ * what was rendered. Shuffling during render would either mismatch on hydration
+ * or visibly reshuffle after mount. The order is fixed per build.
+ */
+export function getPlacePhotos(): string[] {
+  let files: string[];
+  try {
+    files = fs
+      .readdirSync(path.join(ASSET_DIR, "places"))
+      .filter((f) => /^place-\d+\.jpg$/.test(f))
+      .sort();
+  } catch {
+    return [];
+  }
+
+  // Fisher-Yates
+  for (let i = files.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [files[i], files[j]] = [files[j], files[i]];
+  }
+  return files.map((f) => `/assets/places/${f}`);
+}

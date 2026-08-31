@@ -3,7 +3,7 @@ import { Hero } from "@/components/Hero";
 import { Snapshot } from "@/components/Snapshot";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
-import { getRoleLogos } from "@/lib/assets";
+import { getPlacePhotos, getRoleLogos } from "@/lib/assets";
 import { experience } from "@/lib/data";
 import { Writing } from "@/components/Writing";
 import { Places } from "@/components/Places";
@@ -12,6 +12,7 @@ import { Footer } from "@/components/Footer";
 
 export default function Home() {
   const roleLogos = getRoleLogos(experience.map((r) => r.id));
+  const placePhotos = getPlacePhotos();
 
   return (
     <div
@@ -49,7 +50,7 @@ export default function Home() {
         <ProjectsSection />
         <ExperienceSection logos={roleLogos} />
         <Writing />
-        <Places />
+        <Places photos={placePhotos} />
         <Contact />
         <Footer />
       </main>

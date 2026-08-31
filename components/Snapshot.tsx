@@ -125,7 +125,7 @@ export function Snapshot() {
           <div>
             <p className="m-0 mb-1.5 text-[17px] font-medium tracking-[-0.015em]">Ontario Tech University</p>
             <p className="m-0 mb-[3px] text-[14.5px] text-text-muted">BEng Software Engineering</p>
-            <p className="m-0 font-mono text-[11.5px] text-text-faint">Co-op stream · 2024 — 2028</p>
+            <p className="m-0 font-mono text-[11.5px] text-text-faint">Co-op stream · 2023 — 2028</p>
           </div>
           <div className="mt-auto flex flex-wrap gap-2">
             {["Data structures", "Databases", "Systems design"].map((t) => (

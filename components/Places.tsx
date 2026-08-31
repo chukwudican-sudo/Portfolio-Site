@@ -4,10 +4,9 @@ import { useEffect, useRef } from "react";
 import { useReveal } from "@/hooks/useReveal";
 import { ImageSlot } from "./ImageSlot";
 
-const PLACE_COUNT = 8;
 const SPEED_PX_S = 30;
 
-export function Places() {
+export function Places({ photos = [] }: { photos?: string[] }) {
   const sectionRef = useReveal<HTMLElement>();
   const trackRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
@@ -92,7 +91,10 @@ export function Places() {
     if (stripRef.current) stripRef.current.style.cursor = "grab";
   };
 
-  const cards = Array.from({ length: PLACE_COUNT * 2 }, (_, i) => i);
+  // Duplicated so the strip can loop seamlessly; falls back to empty slots
+  // until the photos are prepared.
+  const slots = photos.length ? photos : Array.from({ length: 8 }, () => "");
+  const cards = [...slots, ...slots];
 
   return (
     <section id="places" ref={sectionRef} className="reveal flex flex-col gap-[26px]">
@@ -126,14 +128,25 @@ export function Places() {
         }}
       >
         <div ref={trackRef} className="absolute top-0 left-0 flex h-full gap-[18px] will-change-transform max-[700px]:gap-[11px]">
-          {cards.map((i) => (
+          {cards.map((src, i) => (
             <div
               key={i}
               ref={i === 0 ? firstCardRef : undefined}
               className="h-full w-[clamp(195px,21.5vw,270px)] shrink-0 overflow-hidden rounded-[18px] border border-[rgba(242,237,228,0.10)] shadow-[0_24px_54px_-38px_rgba(0,0,0,0.9)] max-[700px]:w-[132px] max-[700px]:rounded-[14px]"
             >
               <div className="pointer-events-none relative h-full w-full">
-                <ImageSlot label="Drop a photo" />
+                {src ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={src}
+                    alt=""
+                    draggable={false}
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <ImageSlot label="Drop a photo" />
+                )}
               </div>
             </div>
           ))}

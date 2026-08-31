@@ -33,7 +33,7 @@ export function Contact() {
             </a>
             <a
               href={resumeHref}
-              download="Chukwudi_Ndubuisi_Resume.pdf"
+              download="Chukwudi_Alex_Software_Engineering_Resume.pdf"
               className="inline-flex items-center justify-center rounded-[6px] border border-[rgba(242,237,228,0.18)] px-[26px] py-[15px] text-[15px] text-text-primary transition-all duration-250 hover:border-[rgba(224,138,92,0.55)] hover:bg-[rgba(194,96,58,0.10)] max-[700px]:min-h-12 max-[700px]:rounded-[10px] max-[700px]:px-[18px] max-[700px]:py-0 max-[700px]:text-[15px]"
             >
               Download résumé

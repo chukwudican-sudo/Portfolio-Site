@@ -320,7 +320,7 @@ export const nav = [
 export const email = "alex.ndubuisi@ontariotechu.net";
 export const linkedin = "https://www.linkedin.com/in/chukwudi-ndubuisi/";
 export const github = "https://github.com/chukwudican-sudo";
-export const resumeHref = "/assets/Chukwudi_Ndubuisi_Resume.pdf";
+export const resumeHref = "/assets/Chukwudi_Alex_Software_Engineering_Resume.pdf";
 
 /**
  * Deterministic pseudo-random GitHub-style contribution heatmap. 53 weeks x 7
