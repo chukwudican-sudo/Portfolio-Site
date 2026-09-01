@@ -54,13 +54,13 @@ export function Hero() {
           <div className="flex flex-wrap gap-[14px] max-[700px]:justify-center max-[700px]:gap-[10px]">
             <a
               href="#projects"
-              className="beam inline-flex items-center gap-[9px] rounded-[6px] bg-accent px-6 py-[14px] text-[14.5px] font-medium text-surface shadow-[0_14px_30px_-14px_rgba(194,96,58,0.9)] transition-all duration-250 hover:-translate-y-[3px] hover:bg-accent-light max-[700px]:px-[18px] max-[700px]:py-3 max-[700px]:text-[13.5px]"
+              className="beam inline-flex items-center gap-[9px] rounded-[6px] bg-accent px-6 py-[14px] text-[14.5px] font-medium text-surface shadow-[0_14px_30px_-14px_rgba(194,96,58,0.9)] transition-all duration-250 hover:-translate-y-[3px] hover:bg-accent-light max-[700px]:min-h-11 max-[700px]:px-[18px] max-[700px]:py-3 max-[700px]:text-[13.5px]"
             >
               View projects <span className="font-mono text-[12.5px]">→</span>
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center rounded-[6px] border border-[rgba(242,237,228,0.18)] px-6 py-[14px] text-[14.5px] whitespace-nowrap text-text-primary transition-all duration-250 hover:border-[rgba(224,138,92,0.55)] hover:bg-[rgba(194,96,58,0.10)] max-[700px]:px-[18px] max-[700px]:py-3 max-[700px]:text-[13.5px]"
+              className="inline-flex items-center rounded-[6px] border border-[rgba(242,237,228,0.18)] px-6 py-[14px] text-[14.5px] whitespace-nowrap text-text-primary transition-all duration-250 hover:border-[rgba(224,138,92,0.55)] hover:bg-[rgba(194,96,58,0.10)] max-[700px]:min-h-11 max-[700px]:px-[18px] max-[700px]:py-3 max-[700px]:text-[13.5px]"
             >
               Get in touch
             </a>

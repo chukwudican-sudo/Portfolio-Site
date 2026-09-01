@@ -8,6 +8,7 @@ import { ProjectOverlay } from "./ProjectOverlay";
 
 export function ProjectsSection() {
   const sectionRef = useReveal<HTMLElement>();
+  const gridRef = useReveal<HTMLDivElement>();
   const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]["id"]>("all");
   const [openProjectId, setOpenProjectId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -97,9 +98,9 @@ export function ProjectsSection() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 min-[701px]:gap-[22px]">
-        {filtered.map((project) => (
-          <ProjectCard key={project.id} project={project} onOpen={handleOpen} />
+      <div ref={gridRef} className="reveal-group flex flex-wrap gap-4 min-[701px]:gap-[22px]">
+        {filtered.map((project, i) => (
+          <ProjectCard key={project.id} project={project} index={i} onOpen={handleOpen} />
         ))}
       </div>
 

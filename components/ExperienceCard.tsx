@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { useReveal } from "@/hooks/useReveal";
 import type { ExperienceRole } from "@/lib/data";
 
 /**
@@ -26,6 +27,7 @@ export function ExperienceCard({
   markRef?: (el: HTMLElement | null) => void;
 }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const groupRef = useReveal<HTMLDivElement>();
   const glowRef = useRef<HTMLSpanElement>(null);
   const boxRef = useRef<DOMRect | null>(null);
   const rafRef = useRef(0);
@@ -109,10 +111,11 @@ export function ExperienceCard({
 
   const chips = (
     <div className="flex flex-wrap gap-2">
-      {role.chips.map((chip) => (
+      {role.chips.map((chip, i) => (
         <span
           key={chip}
-          className="chip px-[11px] py-[6px] text-[12.5px] font-medium max-[700px]:px-[9px] max-[700px]:py-1 max-[700px]:text-[11.5px]"
+          style={{ "--delay": `${140 + i * 55}ms` } as React.CSSProperties}
+          className="chip blur-in blur-in-left px-[11px] py-[6px] text-[12.5px] font-medium max-[700px]:px-[9px] max-[700px]:py-1 max-[700px]:text-[11.5px]"
         >
           {chip}
         </span>
@@ -167,7 +170,10 @@ export function ExperienceCard({
   // ---- resting: compact row, the whole card is the control ----
   return (
     <div
-      ref={rootRef}
+      ref={(el) => {
+        rootRef.current = el;
+        groupRef.current = el;
+      }}
       role="button"
       tabIndex={0}
       aria-label={`${role.title} at ${role.company}. View details`}
@@ -181,7 +187,7 @@ export function ExperienceCard({
       onPointerEnter={onPointerEnter}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      className="group glass glass-hover-static relative cursor-pointer overflow-hidden rounded-[18px] p-6 outline-none focus-visible:border-[rgba(224,138,92,0.55)] max-[700px]:rounded-[16px] max-[700px]:p-4"
+      className="group reveal-group glass glass-hover-static relative cursor-pointer overflow-hidden rounded-[18px] p-6 outline-none focus-visible:border-[rgba(224,138,92,0.55)] max-[700px]:rounded-[16px] max-[700px]:p-4"
     >
       <span
         ref={glowRef}
@@ -190,11 +196,11 @@ export function ExperienceCard({
         className="pointer-events-none absolute top-0 left-0 h-[300px] w-[300px] rounded-full bg-[radial-gradient(circle,rgba(224,138,92,0.15),rgba(194,96,58,0.05)_44%,rgba(194,96,58,0)_70%)] transition-opacity duration-[450ms]"
       />
       <div className="relative flex flex-col gap-[14px]">
-        <div className="flex items-start gap-[14px] max-[700px]:gap-[10px]">
+        <div className="blur-in flex items-start gap-[14px] max-[700px]:gap-[10px]">
           {tile}
           {heading}
         </div>
-        <p className="text-pretty m-0 text-[14.5px] leading-[1.55] text-text-muted max-[700px]:text-[13px]">
+        <p style={{ "--delay": "70ms" } as React.CSSProperties} className="blur-in text-pretty m-0 text-[14.5px] leading-[1.55] text-text-muted max-[700px]:text-[13px]">
           {role.description}
         </p>
         {chips}

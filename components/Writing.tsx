@@ -7,6 +7,7 @@ import { ImageSlot } from "./ImageSlot";
 
 export function Writing() {
   const ref = useReveal<HTMLElement>();
+  const gridRef = useReveal<HTMLDivElement>();
   return (
     <section id="writing" ref={ref} className="reveal flex flex-col gap-[26px]">
       <div className="flex flex-wrap items-baseline justify-between gap-5 px-1 pt-1">
@@ -26,12 +27,13 @@ export function Writing() {
         </a>
       </div>
 
-      <div className="flex flex-wrap items-stretch gap-[22px] max-[700px]:flex-col max-[700px]:gap-6">
-        {posts.map((post) => (
+      <div ref={gridRef} className="reveal-group flex flex-wrap items-stretch gap-[22px] max-[700px]:flex-col max-[700px]:gap-6">
+        {posts.map((post, i) => (
           <Link
             key={post.id}
             href={`/writing/${post.id}`}
-            className="glass-accent glass-hover glass-flat-mobile flex min-w-0 flex-1 basis-[290px] flex-col overflow-hidden rounded-[18px] max-[700px]:flex-none max-[700px]:basis-auto max-[700px]:flex-row max-[700px]:items-start max-[700px]:gap-[14px] max-[700px]:rounded-none max-[700px]:p-0"
+            style={{ "--delay": `${i * 90}ms` } as React.CSSProperties}
+            className="blur-in glass-accent glass-hover glass-flat-mobile flex min-w-0 flex-1 basis-[290px] flex-col overflow-hidden rounded-[18px] max-[700px]:flex-none max-[700px]:basis-auto max-[700px]:flex-row max-[700px]:items-start max-[700px]:gap-[14px] max-[700px]:rounded-none max-[700px]:p-0"
           >
             <div className="relative aspect-[16/10] overflow-hidden border-b border-[rgba(242,237,228,0.07)] bg-[radial-gradient(420px_220px_at_60%_30%,rgba(194,96,58,0.22),transparent_70%)] max-[700px]:mt-0.5 max-[700px]:aspect-[16/9] max-[700px]:w-[84px] max-[700px]:shrink-0 max-[700px]:rounded-[9px] max-[700px]:border-none">
               <ImageSlot label="Cover image" />
@@ -59,7 +61,7 @@ export function Writing() {
 
       <a
         href="#writing"
-        className="hidden self-center text-[13.5px] text-text-dim max-[700px]:mt-1 max-[700px]:block"
+        className="hidden self-center text-[13.5px] text-text-dim max-[700px]:mt-1 max-[700px]:inline-flex max-[700px]:min-h-11 max-[700px]:items-center max-[700px]:justify-center"
       >
         Read all posts  ↗
       </a>

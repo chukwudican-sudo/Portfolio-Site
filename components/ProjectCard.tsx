@@ -25,10 +25,13 @@ const flexBySpan: Record<Project["span"], string> = {
 export function ProjectCard({
   project,
   expanded = false,
+  index = 0,
   onOpen,
 }: {
   project: Project;
   expanded?: boolean;
+  /** position in the grid, used to stagger the reveal */
+  index?: number;
   onOpen?: (id: string) => void;
 }) {
   const { ref: descRef, clamped } = useOverflowMask<HTMLParagraphElement>();
@@ -181,7 +184,8 @@ export function ProjectCard({
           onOpen?.(project.id);
         }
       }}
-      className={`glass glass-hover flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[22px] outline-none focus-visible:border-[rgba(224,138,92,0.55)] ${flexBySpan[project.span]}`}
+      style={{ "--delay": `${index * 90}ms` } as React.CSSProperties}
+      className={`blur-in glass glass-hover flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[22px] outline-none focus-visible:border-[rgba(224,138,92,0.55)] ${flexBySpan[project.span]}`}
     >
       {media}
       <div className="flex flex-1 flex-col gap-[18px] p-7 pt-[26px] max-[700px]:p-5">

@@ -26,12 +26,14 @@ const smallStatLabel =
 export function Snapshot() {
   const { total, longestStreak } = buildHeatmap();
   const ref = useReveal<HTMLElement>();
+  const row1Ref = useReveal<HTMLDivElement>();
+  const row2Ref = useReveal<HTMLDivElement>();
 
   return (
     <section id="snapshot" ref={ref} className="reveal flex flex-col gap-[22px]">
-      <div className="flex flex-wrap items-stretch gap-[22px]">
+      <div ref={row1Ref} className="reveal-group flex flex-wrap items-stretch gap-[22px]">
         {/* Activity */}
-        <div className="glass-accent min-w-0 flex-[6_1_340px] rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:flex-[1_1_100%]">
+        <div style={{ "--delay": "0ms" } as React.CSSProperties} className="blur-in glass-accent min-w-0 flex-[6_1_340px] rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:flex-[1_1_100%]">
           <CardEyebrow icon={<ActivityIcon />} className="mb-[18px]">
             Activity
           </CardEyebrow>
@@ -66,7 +68,7 @@ export function Snapshot() {
         </div>
 
         {/* Numbers */}
-        <div className="flex min-w-0 flex-[2_1_170px] flex-col gap-[22px] max-[700px]:order-2 max-[700px]:flex-none max-[700px]:basis-[calc(50%-11px)] max-[700px]:gap-[14px]">
+        <div style={{ "--delay": "110ms" } as React.CSSProperties} className="blur-in flex min-w-0 flex-[2_1_170px] flex-col gap-[22px] max-[700px]:order-2 max-[700px]:flex-none max-[700px]:basis-[calc(50%-11px)] max-[700px]:gap-[14px]">
           <div className="glass-accent flex flex-1 flex-col justify-center gap-1.5 rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:px-4 max-[700px]:py-5">
             <CardEyebrow icon={<CoffeeIcon />}>Coffees drank</CardEyebrow>
             <StatNumber
@@ -84,7 +86,7 @@ export function Snapshot() {
         </div>
 
         {/* Connect */}
-        <div className="glass-accent flex min-w-0 flex-[2_1_180px] flex-col rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:order-1 max-[700px]:flex-none max-[700px]:basis-[calc(50%-11px)]">
+        <div style={{ "--delay": "220ms" } as React.CSSProperties} className="blur-in glass-accent flex min-w-0 flex-[2_1_180px] flex-col rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:order-1 max-[700px]:flex-none max-[700px]:basis-[calc(50%-11px)]">
           <CardEyebrow icon={<ConnectIcon />} className="mb-5">
             Connect
           </CardEyebrow>
@@ -118,9 +120,9 @@ export function Snapshot() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-stretch gap-[22px]">
+      <div ref={row2Ref} className="reveal-group flex flex-wrap items-stretch gap-[22px]">
         {/* Education */}
-        <div className="glass-accent flex min-w-0 flex-[5_1_330px] flex-col gap-5 rounded-[22px] p-[clamp(24px,2.2vw,34px)]">
+        <div style={{ "--delay": "0ms" } as React.CSSProperties} className="blur-in glass-accent flex min-w-0 flex-[5_1_330px] flex-col gap-5 rounded-[22px] p-[clamp(24px,2.2vw,34px)]">
           <CardEyebrow icon={<EducationIcon />}>Education</CardEyebrow>
           <div>
             <p className="m-0 mb-1.5 text-[17px] font-medium tracking-[-0.015em]">Ontario Tech University</p>
@@ -140,7 +142,7 @@ export function Snapshot() {
         </div>
 
         {/* Fav tool */}
-        <div className="glass-accent flex min-w-0 flex-[4_1_285px] flex-col rounded-[22px] p-[clamp(24px,2.2vw,34px)]">
+        <div style={{ "--delay": "110ms" } as React.CSSProperties} className="blur-in glass-accent flex min-w-0 flex-[4_1_285px] flex-col rounded-[22px] p-[clamp(24px,2.2vw,34px)]">
           <CardEyebrow icon={<HeartIcon />} className="mb-5">
             Fav tool
           </CardEyebrow>

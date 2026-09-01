@@ -9,7 +9,7 @@ export function Header() {
       <div className="mx-auto flex min-h-[70px] w-full max-w-none flex-nowrap items-center gap-[10px] px-4 py-3 sm:gap-[26px] sm:px-[max(24px,calc((100%-var(--content-max-header))/2))]">
         <a
           href="#top"
-          className="flex items-center gap-[11px] font-mono text-[13px] tracking-[0.04em] text-text-primary"
+          className="flex items-center gap-[11px] font-mono text-[13px] tracking-[0.04em] text-text-primary max-[700px]:min-h-11"
         >
           <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-[5px] border border-[rgba(242,237,228,0.22)] text-[12px] text-accent-light">
             CN

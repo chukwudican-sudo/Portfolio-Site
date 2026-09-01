@@ -166,28 +166,28 @@ export function ExperienceSection({ logos = {} }: { logos?: Record<string, strin
 
       {/* The gutter the design authors — the prototype's own runtime deleted it
           on desktop, which pinned the cards against the rail. */}
-      <div className="flex w-full min-w-0 items-stretch gap-[clamp(18px,2.6vw,44px)] max-[700px]:gap-2">
+      <div className="flex w-full min-w-0 items-stretch gap-[clamp(18px,2.6vw,44px)] max-[700px]:gap-2.5">
         <div
           ref={railRef}
           aria-hidden
-          className="relative min-h-20 flex-[0_0_12px] self-stretch max-[700px]:flex-[0_0_3px]"
+          className="relative min-h-20 flex-[0_0_12px] self-stretch max-[700px]:flex-[0_0_6px]"
         >
-          <span className="absolute top-1.5 bottom-1.5 left-[5px] w-0.5 rounded-full bg-[rgba(242,237,228,0.09)] max-[700px]:left-0" />
+          <span className="absolute top-1.5 bottom-1.5 left-[5px] w-0.5 rounded-full bg-[rgba(242,237,228,0.09)] max-[700px]:left-[2px]" />
           {/* gradient trail, filled to the scroll position */}
           <span
             ref={trailRef}
-            className="absolute top-1.5 left-[5px] h-0 w-0.5 rounded-full bg-[linear-gradient(180deg,rgba(194,96,58,0.10)_0%,rgba(194,96,58,0.42)_46%,rgba(224,138,92,0.85)_84%,#F0B487_100%)] transition-[height] duration-[140ms] ease-linear max-[700px]:left-0"
+            className="absolute top-1.5 left-[5px] max-[700px]:left-[2px] h-0 w-0.5 rounded-full bg-[linear-gradient(180deg,rgba(194,96,58,0.10)_0%,rgba(194,96,58,0.42)_46%,rgba(224,138,92,0.85)_84%,#F0B487_100%)] transition-[height] duration-[140ms] ease-linear"
           />
           {/* soft glow head + bright spark riding the head of the trail */}
           <span
             ref={headRef}
             style={{ opacity: 0 }}
-            className="absolute -left-[14px] top-0 h-10 w-10 rounded-full bg-[radial-gradient(circle,rgba(255,240,228,0.85)_0%,rgba(240,180,132,0.40)_20%,rgba(224,138,92,0.16)_40%,rgba(194,96,58,0)_66%)] transition-[top,opacity] duration-[140ms] ease-linear"
+            className="absolute -left-[14px] top-0 h-10 w-10 max-[700px]:-left-[7px] max-[700px]:h-5 max-[700px]:w-5 rounded-full bg-[radial-gradient(circle,rgba(255,240,228,0.85)_0%,rgba(240,180,132,0.40)_20%,rgba(224,138,92,0.16)_40%,rgba(194,96,58,0)_66%)] transition-[top,opacity] duration-[140ms] ease-linear"
           />
           <span
             ref={sparkRef}
             style={{ opacity: 0 }}
-            className="absolute top-0 left-[4.5px] h-7 w-[3px] rounded-[3px] bg-[linear-gradient(180deg,rgba(240,180,132,0)_0%,rgba(246,211,188,0.9)_42%,#E08A5C_76%,rgba(194,96,58,0)_100%)] shadow-[0_0_14px_3px_rgba(224,138,92,0.45)] transition-[top,opacity] duration-[140ms] ease-linear max-[700px]:left-0"
+            className="absolute top-0 left-[4.5px] max-[700px]:left-[1.5px] h-7 w-[3px] rounded-[3px] bg-[linear-gradient(180deg,rgba(240,180,132,0)_0%,rgba(246,211,188,0.9)_42%,#E08A5C_76%,rgba(194,96,58,0)_100%)] shadow-[0_0_14px_3px_rgba(224,138,92,0.45)] transition-[top,opacity] duration-[140ms] ease-linear"
           />
           {experience.map((role, i) => (
             <span
@@ -196,7 +196,7 @@ export function ExperienceSection({ logos = {} }: { logos?: Record<string, strin
                 dotEls.current[i] = el;
               }}
               style={{ opacity: 0, background: "#171513", borderColor: "rgba(242,237,228,0.18)" }}
-              className="absolute left-0.5 h-2 w-2 rounded-full border transition-[background,border-color,box-shadow] duration-[400ms] max-[700px]:left-0"
+              className="absolute left-0.5 h-2 w-2 max-[700px]:h-1.5 max-[700px]:w-1.5 rounded-full border transition-[background,border-color,box-shadow] duration-[400ms] max-[700px]:left-0"
             />
           ))}
         </div>

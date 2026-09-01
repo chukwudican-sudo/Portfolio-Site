@@ -46,7 +46,10 @@ export function Places({ photos = [] }: { photos?: string[] }) {
         if (Math.abs(velocityRef.current) > 0.01) {
           offsetRef.current += velocityRef.current * dt;
           velocityRef.current *= Math.pow(0.94, dt / 16.7);
-        } else if (!prefersReduced && !isTouchRef.current && !hoveringRef.current) {
+        } else if (!prefersReduced && (isTouchRef.current || !hoveringRef.current)) {
+          // Touch devices auto-scroll unconditionally: pointerenter fires on tap
+          // and would otherwise latch the strip paused for good. Hover-to-pause
+          // is a mouse affordance only.
           offsetRef.current += (SPEED_PX_S * dt) / 1000;
         }
       }
@@ -115,7 +118,7 @@ export function Places({ photos = [] }: { photos?: string[] }) {
 
       <div
         ref={stripRef}
-        className="relative h-[clamp(260px,29vw,360px)] cursor-grab touch-pan-y overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_9%,#000_91%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_9%,#000_91%,transparent)] max-[700px]:mx-[-16px] max-[700px]:h-[176px] max-[700px]:w-[calc(100%+32px)] max-[700px]:[mask-image:none] max-[700px]:[-webkit-mask-image:none]"
+        className="relative h-[clamp(260px,29vw,360px)] cursor-grab touch-pan-y overflow-hidden max-[700px]:mx-[-16px] max-[700px]:h-[176px] max-[700px]:w-[calc(100%+32px)]"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
@@ -151,6 +154,21 @@ export function Places({ photos = [] }: { photos?: string[] }) {
             </div>
           ))}
         </div>
+
+        {/* Progressive blur at both ends. The backdrop blur is full strength at
+            the outer edge and ramps to nothing inward, so photos soften as they
+            approach the edge and then stop at the container's clean line —
+            rather than dissolving to nothing or being chopped mid-photo. The
+            page background is laid over the same ramp so the softened edge
+            settles into the site colour instead of staying a bright smear. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[10%] bg-[linear-gradient(90deg,var(--color-bg),transparent_72%)] backdrop-blur-[8px] [mask-image:linear-gradient(90deg,#000_36%,transparent)] [-webkit-mask-image:linear-gradient(90deg,#000_36%,transparent)] max-[700px]:w-[17%]"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-[10%] bg-[linear-gradient(270deg,var(--color-bg),transparent_72%)] backdrop-blur-[8px] [mask-image:linear-gradient(270deg,#000_36%,transparent)] [-webkit-mask-image:linear-gradient(270deg,#000_36%,transparent)] max-[700px]:w-[17%]"
+        />
       </div>
     </section>
   );

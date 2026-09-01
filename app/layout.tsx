@@ -37,7 +37,14 @@ export default function RootLayout({
           React hydrates (ColorZilla's cz-shortcut-listen, Grammarly, etc.),
           which trips a hydration warning. This suppresses that comparison for
           <body> itself only — children are still checked normally. */}
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        {/* The scroll reveals start hidden and are un-hidden by JS. If JS never
+            runs, the page would render blank, so show everything instead. */}
+        <noscript>
+          <style>{`.reveal,.blur-in,.blur-in-left{opacity:1!important;filter:none!important;transform:none!important}`}</style>
+        </noscript>
+        {children}
+      </body>
     </html>
   );
 }
