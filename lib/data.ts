@@ -255,38 +255,183 @@ export const experience: ExperienceRole[] = [
   },
 ];
 
+export type PostBlock =
+  | { kind: "p"; text: string }
+  | { kind: "h2"; text: string }
+  | { kind: "code"; lang?: string; text: string }
+  | { kind: "list"; items: string[] };
+
 export type Post = {
   id: string;
   title: string;
   excerpt: string;
   date: string;
   readTime: string;
+  body: PostBlock[];
 };
 
 export const posts: Post[] = [
   {
-    id: "verifying-stripe-payments",
-    title: "Verifying Stripe payments server-side",
+    id: "forcing-structured-output",
+    title: "Getting an LLM to return data, not prose",
     excerpt:
-      "Trusting the client's word on a completed payment is how you ship free digital goods. What I check in the Worker before delivery.",
-    date: "Jun 2026",
+      "Resumi asks Claude to rewrite a resume against a job posting. The first version parsed free text and broke constantly. Forced tool-use fixed it properly.",
+    date: "Aug 2026",
     readTime: "6 min",
+    body: [
+      {
+        kind: "p",
+        text: "Resumi takes your resume and a job posting and rewrites the bullets to match. The interesting problem is not the rewriting — the model is good at that. It is getting the result back in a shape the rest of the application can rely on.",
+      },
+      { kind: "h2", text: "Parsing prose is a trap" },
+      {
+        kind: "p",
+        text: "My first version asked for JSON in the prompt and parsed whatever came back. It worked most of the time, which is the worst possible outcome — it worked well enough that I built on top of it before I understood how it failed.",
+      },
+      {
+        kind: "p",
+        text: "The failures were never malformed JSON. They were well-formed JSON with invented fields, or the right fields with subtly wrong types — a string where I expected an array, a single object where I expected a list of one. Every one of those reached the UI as an empty section rather than an error, because a missing key and an empty result look identical once you are three layers deep in optional chaining.",
+      },
+      { kind: "h2", text: "Forced tool-use" },
+      {
+        kind: "p",
+        text: "The fix was to stop asking and start constraining. Claude's API lets you define a tool with a JSON schema and require that the model responds by calling it. The response is validated against that schema before it reaches you. Off-schema output is not something you detect and handle — it is something that cannot be returned.",
+      },
+      {
+        kind: "p",
+        text: "Resumi has four call modes, each with its own schema and its own endpoint: extract pulls structure out of a job posting, extract_resume does the same for an uploaded resume, tailor rewrites bullets against a target, and instruct applies a specific user edit. Four narrow contracts instead of one prompt trying to be everything.",
+      },
+      { kind: "h2", text: "The prompt is a boundary, not a suggestion" },
+      {
+        kind: "p",
+        text: "Schema constrains the shape. It says nothing about what the model is allowed to change. Nothing in a schema stops it inventing a job you never had, in perfectly valid JSON.",
+      },
+      {
+        kind: "p",
+        text: "So the system prompt is 44 lines and almost all of it is prohibitions: rewrite phrasing, never invent employers, never change dates, never add a skill that does not appear in the source. Explicit content boundaries, not style guidance. The schema enforces the container; the prompt enforces the contents.",
+      },
+      { kind: "h2", text: "Testing without paying for it" },
+      {
+        kind: "p",
+        text: "Every end-to-end test hitting the real API costs money and takes seconds, which means you write fewer of them, which means you catch less. Resumi has a mock mode behind an environment variable:",
+      },
+      { kind: "code", lang: "bash", text: "RESUMI_MOCK=1 npm run dev" },
+      {
+        kind: "p",
+        text: "Every call mode returns a fixed, schema-valid fixture. The whole application — upload, extract, tailor, render to LaTeX, download — runs end to end for free, in milliseconds. It catches the class of bug that actually bit me, which was never the model being wrong. It was my code mishandling a shape it did not expect.",
+      },
+      { kind: "h2", text: "What I would tell myself" },
+      {
+        kind: "p",
+        text: "If the model's output feeds anything other than a screen a human immediately reads, do not parse it. Constrain it. The parsing version is faster to build and you will spend that time back, with interest, on failures that look like empty states instead of errors.",
+      },
+    ],
+  },
+  {
+    id: "rate-limiter-timing-bug",
+    title: "A rate limiter that was wrong for the first request only",
+    excerpt:
+      "I built three rate-limiting algorithms to learn Python properly. One had a bug that every obvious test passed straight over.",
+    date: "Aug 2026",
+    readTime: "5 min",
+    body: [
+      {
+        kind: "p",
+        text: "Python kept appearing in job postings and I had nothing to show for it, so I built something small and real: Token Bucket, Leaky Bucket and Sliding Window, implemented as independent classes behind one interface, with a traffic simulator and a chart comparing how each behaves under load.",
+      },
+      { kind: "h2", text: "The bug" },
+      {
+        kind: "p",
+        text: "Each algorithm tracks when it last refilled or leaked. I initialised that lazily, on the first call, which is a reasonable instinct — you do not know when traffic will start, so you start the clock when it does.",
+      },
+      {
+        kind: "p",
+        text: "Except I initialised it to the wall clock at that moment, not to the timestamp of the request being handled. Those are the same number when requests arrive live. They are different numbers when time is passed in, which is exactly what happens in a simulation and in a test.",
+      },
+      {
+        kind: "code",
+        lang: "python",
+        text:
+          "# wrong: the clock starts when the code runs\nif self._last is None:\n    self._last = time.monotonic()\n\n# right: the clock starts when the traffic starts\nif self._last is None:\n    self._last = now",
+      },
+      {
+        kind: "p",
+        text: "The window for the very first request was measured from the wrong origin. Every request after it was correct, because by then _last had been set from a real timestamp.",
+      },
+      { kind: "h2", text: "Why the obvious tests missed it" },
+      {
+        kind: "p",
+        text: "A test that fires a burst and asserts the limit holds passes: request one is off by a fraction, requests two through forty are fine, the total is right. A test that checks refill timing passes, because refill only happens after the first request has already fixed the state.",
+      },
+      {
+        kind: "p",
+        text: "It only showed up in the simulator, where I control time explicitly and start at zero. The first request behaved as though the window had begun at whatever the machine's clock said, which was not zero, so its allowance came out wrong. One dot out of place on a chart.",
+      },
+      { kind: "h2", text: "What caught it" },
+      {
+        kind: "p",
+        text: "Being able to inject time. Every algorithm takes now as a parameter rather than reading the clock itself. That was originally for testing, but it is what made the bug visible — with time as an input, first-request behaviour is something you can assert on, and the discrepancy between the injected timestamp and the internal state had somewhere to show up.",
+      },
+      {
+        kind: "p",
+        text: "The suite is 16 tests covering limit enforcement, refill and leak timing, and window-expiry edges, plus live verification with curl against a running FastAPI server to confirm real 200s and 429s. But the test that would have caught this on day one is the boring one: assert that the very first request, at a known timestamp, behaves exactly like the second.",
+      },
+      { kind: "h2", text: "The lesson" },
+      {
+        kind: "p",
+        text: "Lazy initialisation quietly picks a value from context. When the context is a clock, it picks the wrong one the moment the caller has their own idea of what time it is. If your code takes time as a parameter, take it from the parameter — including the first time.",
+      },
+    ],
   },
   {
     id: "row-level-security",
     title: "Why row-level security beat my API guards",
     excerpt:
-      "I had auth checks in every endpoint. Moving the rules into Postgres deleted a whole class of bug I kept reintroducing.",
-    date: "Apr 2026",
-    readTime: "8 min",
-  },
-  {
-    id: "eleven-adrs",
-    title: "Eleven ADRs into a solo project",
-    excerpt:
-      "Writing decision records for a codebase only I touch felt like overhead. Then I came back after four months.",
-    date: "Feb 2026",
-    readTime: "5 min",
+      "I had auth checks in every endpoint and kept reintroducing the same bug. Moving the rules into Postgres deleted the whole category.",
+    date: "Jul 2026",
+    readTime: "6 min",
+    body: [
+      {
+        kind: "p",
+        text: "MealApp is offline-first, which means the client holds a copy of your data and syncs it back. That makes the isolation question sharper than usual: it is not just whether an endpoint checks who you are, it is whether anything reaching the database can be trusted to say who it is for.",
+      },
+      { kind: "h2", text: "The bug I kept writing" },
+      {
+        kind: "p",
+        text: "The obvious approach is a check at the top of every handler: read the session, compare the user id, reject if it does not match. It works. It also has to be written correctly in every handler, forever, including the one you add at midnight because a screen needs one more field.",
+      },
+      {
+        kind: "p",
+        text: "I did not forget the check. What I did, more than once, was write a query that filtered by something adjacent — the meal plan id rather than the user id — on the assumption that owning the plan had already been established upstream. Sometimes it had. The bug was never a missing guard, it was a guard proving something slightly different from what the query then relied on.",
+      },
+      { kind: "h2", text: "Moving the rule into the database" },
+      {
+        kind: "p",
+        text: "Row-level security puts the predicate on the table itself. A policy says which rows a role may see, and Postgres applies it to every query touching that table, regardless of which endpoint issued it or what the query looked like.",
+      },
+      {
+        kind: "p",
+        text: "The 17-table schema has policies on every user-scoped table. A query that forgets to filter by user does not leak — it returns nothing, because the rows were never visible. The failure mode changed from silently wrong to obviously empty, and obviously empty is something you notice in development.",
+      },
+      { kind: "h2", text: "Revoke first, then grant" },
+      {
+        kind: "p",
+        text: "The related move, on Kudi Kitchen's review system, was revoking default grants entirely. Anonymous and authenticated roles have zero access to those tables; only the service role can touch them, through Edge Functions that do the checking. Nothing is reachable because nobody remembered to lock it — the default is closed and access is added deliberately.",
+      },
+      {
+        kind: "p",
+        text: "Other invariants went the same way. Freemium entitlements resolve through an atomic Postgres function rather than read-then-write in application code, so two concurrent purchase attempts cannot both see an unclaimed entitlement. Business rules that must not race live where the transaction is.",
+      },
+      { kind: "h2", text: "What this does not solve" },
+      {
+        kind: "p",
+        text: "RLS is not a substitute for authentication — something still has to establish who the request is from, and if that is wrong the policies faithfully enforce the wrong thing. It also does not help with rules that are not expressible per-row.",
+      },
+      {
+        kind: "p",
+        text: "What it does is move a rule from somewhere it must be repeated to somewhere it is stated once. My endpoints still check things. The difference is that when one of them is wrong, it is now wrong in a way that shows up as no data rather than someone else's.",
+      },
+    ],
   },
 ];
 

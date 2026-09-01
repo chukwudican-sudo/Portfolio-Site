@@ -1,6 +1,7 @@
 "use client";
 
 import { useReveal } from "@/hooks/useReveal";
+import Link from "next/link";
 import { posts } from "@/lib/data";
 import { ImageSlot } from "./ImageSlot";
 
@@ -27,9 +28,9 @@ export function Writing() {
 
       <div className="flex flex-wrap items-stretch gap-[22px] max-[700px]:flex-col max-[700px]:gap-6">
         {posts.map((post) => (
-          <a
+          <Link
             key={post.id}
-            href="#writing"
+            href={`/writing/${post.id}`}
             className="glass-accent glass-hover glass-flat-mobile flex min-w-0 flex-1 basis-[290px] flex-col overflow-hidden rounded-[18px] max-[700px]:flex-none max-[700px]:basis-auto max-[700px]:flex-row max-[700px]:items-start max-[700px]:gap-[14px] max-[700px]:rounded-none max-[700px]:p-0"
           >
             <div className="relative aspect-[16/10] overflow-hidden border-b border-[rgba(242,237,228,0.07)] bg-[radial-gradient(420px_220px_at_60%_30%,rgba(194,96,58,0.22),transparent_70%)] max-[700px]:mt-0.5 max-[700px]:aspect-[16/9] max-[700px]:w-[84px] max-[700px]:shrink-0 max-[700px]:rounded-[9px] max-[700px]:border-none">
@@ -52,7 +53,7 @@ export function Writing() {
                 <span>{post.readTime}</span>
               </div>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
 
