@@ -20,10 +20,27 @@ const jetbrainsMono = JetBrains_Mono({
   adjustFontFallback: false,
 });
 
+const description =
+  "Software engineering student at Ontario Tech who builds and ships full products — interfaces, APIs, data, and the rules that decide what happens when something looks wrong. Available for Winter 2027 co-op.";
+
 export const metadata: Metadata = {
+  // Set once the domain is live; relative OG/Twitter URLs resolve against it.
+  metadataBase: new URL("https://meetalexius.com"),
   title: "Chukwudi Ndubuisi — Software Engineer",
-  description:
-    "Software engineering student at Ontario Tech who builds and ships full products — interfaces, APIs, data, and the rules that decide what happens when something looks wrong. Available for Winter 2027 co-op.",
+  description,
+  openGraph: {
+    title: "Chukwudi Ndubuisi — Software Engineer",
+    description,
+    url: "/",
+    siteName: "Chukwudi Ndubuisi",
+    locale: "en_CA",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Chukwudi Ndubuisi — Software Engineer",
+    description,
+  },
 };
 
 export default function RootLayout({
