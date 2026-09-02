@@ -8,7 +8,7 @@ export function Hero() {
       className="flex min-h-[min(86vh,880px)] flex-wrap items-stretch gap-[22px] pt-[clamp(60px,10vh,132px)] pb-[clamp(8px,2vh,28px)] max-[700px]:min-h-0 max-[700px]:flex-col max-[700px]:items-center max-[700px]:justify-center max-[700px]:pt-[22px] max-[700px]:pb-0 max-[700px]:text-center"
     >
       {/* Text card */}
-      <div className="glass glass-flat-mobile relative order-1 flex min-h-[clamp(430px,58vh,600px)] min-w-0 flex-[7_1_440px] flex-col justify-center overflow-hidden rounded-[22px] p-[clamp(34px,3.6vw,62px)] max-[700px]:order-2 max-[700px]:min-h-0 max-[700px]:w-full max-[700px]:flex-none max-[700px]:p-0">
+      <div className="glass glass-flat-mobile relative order-1 flex min-h-[clamp(430px,58vh,600px)] min-w-0 flex-[7_1_440px] flex-col justify-center overflow-hidden rounded-[22px] p-[clamp(34px,3.6vw,62px)] max-[700px]:order-2 max-[700px]:min-h-0 max-[700px]:w-full max-[700px]:flex-none max-[700px]:overflow-visible max-[700px]:p-0">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 font-mono text-accent-light max-[700px]:hidden"
@@ -39,16 +39,19 @@ export function Hero() {
           </div>
 
           <h1 className="m-0 mb-[18px] text-[clamp(37px,5.2vw,78px)] leading-[0.96] font-semibold tracking-[-0.05em] max-[700px]:mb-[10px] max-[700px]:text-[46px] max-[700px]:leading-[1.02] max-[700px]:tracking-[-0.045em]">
-            Hi, I&rsquo;m Alex
+            Hi, I&rsquo;m{" "}
+            <span className="bg-[linear-gradient(96deg,var(--color-accent-glow),var(--color-text-primary)_62%)] bg-clip-text pr-[0.08em] pb-[0.12em] text-[1.06em] leading-[1.28] font-normal tracking-normal text-transparent">
+              <span className="font-script-caps pr-[0.02em]">A</span>
+              <span className="font-script">lex</span>
+            </span>
           </h1>
 
-          <p className="m-0 mb-6 font-mono text-[clamp(15px,1.5vw,21px)] tracking-[-0.01em] text-accent max-[700px]:mb-[18px] max-[700px]:text-[14px]">
-            <span className="opacity-70">&lt;</span>engineer<span className="opacity-70">&gt;</span>
-          </p>
-
-          <p className="m-0 mb-[30px] max-w-[min(46ch,100%)] text-[clamp(16.5px,1.35vw,19px)] leading-[1.65] text-text-secondary max-[700px]:mx-auto max-[700px]:mb-[26px] max-[700px]:max-w-[32ch] max-[700px]:text-[14.5px] max-[700px]:leading-[1.6] max-[700px]:text-text-muted">
-            Software engineering student at Ontario Tech who builds and ships full products — interfaces, APIs, data,
-            and the rules that decide what happens when something looks wrong.
+          <p className="m-0 mt-[22px] mb-[30px] max-w-[min(54ch,100%)] text-[clamp(17px,1.4vw,20px)] leading-[1.6] font-medium text-text-primary max-[700px]:mx-auto max-[700px]:mt-[14px] max-[700px]:mb-[26px] max-[700px]:max-w-full max-[700px]:text-[13.5px] max-[700px]:leading-[1.55] max-[700px]:text-text-primary">
+            A Software Engineer who builds things{" "}
+            <span className="font-script pr-[0.06em] text-[1.18em] leading-[1.1] font-normal tracking-normal whitespace-nowrap text-text-primary">
+              end to end
+            </span>
+            .
           </p>
 
           <div className="flex flex-wrap gap-[14px] max-[700px]:justify-center max-[700px]:gap-[10px]">

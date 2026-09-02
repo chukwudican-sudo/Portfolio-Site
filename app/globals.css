@@ -531,3 +531,13 @@ a {
     mask-image: linear-gradient(180deg, #000 62%, rgba(0, 0, 0, 0.42));
   }
 }
+
+/* Two script faces: the body of the name in Pacifico, its capital in Lobster
+   Two (see layout.tsx for why). Declared here rather than in @theme because
+   both names collide with the variables next/font already sets on <html>. */
+.font-script {
+  font-family: var(--font-script), ui-rounded, cursive;
+}
+.font-script-caps {
+  font-family: var(--font-script-caps), ui-rounded, cursive;
+}
