@@ -16,7 +16,9 @@ import {
   MailIcon,
   ToolIcon,
 } from "./icons";
+import type { Tool } from "@/lib/data";
 import { currentlyLearning, email, github, linkedin, tools, toolsLoop } from "@/lib/data";
+import { getToolIcon } from "@/lib/tool-icons";
 
 const smallStatFont =
   "font-mono text-[16.5px] font-medium text-accent-light max-[700px]:text-[15px]";
@@ -25,15 +27,13 @@ const smallStatLabel =
 
 export function Snapshot() {
   const { total, longestStreak } = buildHeatmap();
-  const ref = useReveal<HTMLElement>();
-  const row1Ref = useReveal<HTMLDivElement>();
   const row2Ref = useReveal<HTMLDivElement>();
 
   return (
-    <section id="snapshot" ref={ref} className="reveal flex flex-col gap-[22px]">
-      <div ref={row1Ref} className="reveal-group flex flex-wrap items-stretch gap-[22px]">
+    <section id="snapshot" className="flex flex-col gap-[22px]">
+      <div className="flex flex-wrap items-stretch gap-[22px]">
         {/* Activity */}
-        <div style={{ "--delay": "0ms" } as React.CSSProperties} className="blur-in glass-accent min-w-0 flex-[6_1_340px] rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:flex-[1_1_100%]">
+        <div className="glass-accent min-w-0 flex-[6_1_340px] rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:flex-[1_1_100%]">
           <CardEyebrow icon={<ActivityIcon />} className="mb-[18px]">
             Activity
           </CardEyebrow>
@@ -68,7 +68,7 @@ export function Snapshot() {
         </div>
 
         {/* Numbers */}
-        <div style={{ "--delay": "110ms" } as React.CSSProperties} className="blur-in flex min-w-0 flex-[2_1_170px] flex-col gap-[22px] max-[700px]:order-2 max-[700px]:flex-none max-[700px]:basis-[calc(50%-11px)] max-[700px]:gap-[14px]">
+        <div className="flex min-w-0 flex-[2_1_170px] flex-col gap-[22px] max-[700px]:order-2 max-[700px]:flex-none max-[700px]:basis-[calc(50%-11px)] max-[700px]:gap-[14px]">
           <div className="glass-accent flex flex-1 flex-col justify-center gap-1.5 rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:px-4 max-[700px]:py-5">
             <CardEyebrow icon={<CoffeeIcon />}>Coffees drank</CardEyebrow>
             <StatNumber
@@ -86,35 +86,50 @@ export function Snapshot() {
         </div>
 
         {/* Connect */}
-        <div style={{ "--delay": "220ms" } as React.CSSProperties} className="blur-in glass-accent flex min-w-0 flex-[2_1_180px] flex-col rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:order-1 max-[700px]:flex-none max-[700px]:basis-[calc(50%-11px)]">
+        <div className="glass-accent flex min-w-0 flex-[2_1_180px] flex-col rounded-[22px] p-[clamp(24px,2.2vw,34px)] max-[700px]:order-1 max-[700px]:flex-none max-[700px]:basis-[calc(50%-11px)]">
           <CardEyebrow icon={<ConnectIcon />} className="mb-5">
             Connect
           </CardEyebrow>
-          <div className="flex flex-col">
+          <div className="flex flex-1 flex-col justify-center">
             <a
               href={`mailto:${email}`}
-              className="flex items-center gap-[11px] border-b border-[rgba(242,237,228,0.08)] py-[11px] text-[14.5px] text-[#D8D0C4] transition-colors duration-250 hover:text-accent-light max-[700px]:min-h-[46px] max-[700px]:py-3 max-[700px]:text-[15px]"
+              className="group/link flex items-center justify-between gap-[11px] border-b border-[rgba(242,237,228,0.08)] py-[13px] text-[14.5px] text-[#D8D0C4] transition-colors duration-250 hover:text-accent-light max-[700px]:min-h-[46px] max-[700px]:py-3 max-[700px]:text-[15px]"
             >
-              <MailIcon className="shrink-0 text-accent-light" />
-              Email
+              <span className="flex min-w-0 items-center gap-[11px]">
+                <MailIcon className="shrink-0 text-accent-light" />
+                Email
+              </span>
+              <span className="shrink-0 font-mono text-[12px] text-text-faint transition-colors duration-250 group-hover/link:text-accent-light">
+                →
+              </span>
             </a>
             <a
               href={linkedin}
               target="_blank"
               rel="noopener"
-              className="flex items-center gap-[11px] border-b border-[rgba(242,237,228,0.08)] py-[11px] text-[14.5px] text-[#D8D0C4] transition-colors duration-250 hover:text-accent-light max-[700px]:min-h-[46px] max-[700px]:py-3 max-[700px]:text-[15px]"
+              className="group/link flex items-center justify-between gap-[11px] border-b border-[rgba(242,237,228,0.08)] py-[13px] text-[14.5px] text-[#D8D0C4] transition-colors duration-250 hover:text-accent-light max-[700px]:min-h-[46px] max-[700px]:py-3 max-[700px]:text-[15px]"
             >
-              <LinkedinIcon className="shrink-0 text-accent-light" />
-              LinkedIn
+              <span className="flex min-w-0 items-center gap-[11px]">
+                <LinkedinIcon className="shrink-0 text-accent-light" />
+                LinkedIn
+              </span>
+              <span className="shrink-0 font-mono text-[12px] text-text-faint transition-colors duration-250 group-hover/link:text-accent-light">
+                ↗
+              </span>
             </a>
             <a
               href={github}
               target="_blank"
               rel="noopener"
-              className="flex items-center gap-[11px] border-b border-[rgba(242,237,228,0.08)] py-[11px] text-[14.5px] text-[#D8D0C4] transition-colors duration-250 hover:text-accent-light max-[700px]:min-h-[46px] max-[700px]:py-3 max-[700px]:text-[15px]"
+              className="group/link flex items-center justify-between gap-[11px] py-[13px] text-[14.5px] text-[#D8D0C4] transition-colors duration-250 hover:text-accent-light max-[700px]:min-h-[46px] max-[700px]:py-3 max-[700px]:text-[15px]"
             >
-              <GithubIcon className="shrink-0 text-accent-light" />
-              GitHub
+              <span className="flex min-w-0 items-center gap-[11px]">
+                <GithubIcon className="shrink-0 text-accent-light" />
+                GitHub
+              </span>
+              <span className="shrink-0 font-mono text-[12px] text-text-faint transition-colors duration-250 group-hover/link:text-accent-light">
+                ↗
+              </span>
             </a>
           </div>
         </div>
@@ -203,6 +218,28 @@ export function Snapshot() {
   );
 }
 
+/** Monochrome by default; the brand's own colour arrives on hover. */
+function ToolMark({ tool }: { tool: Tool }) {
+  const icon = getToolIcon(tool.slug);
+  if (!icon) {
+    return (
+      <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[8px] border border-[rgba(242,237,228,0.18)] font-mono text-[12.5px] text-text-secondary max-[700px]:h-[42px] max-[700px]:w-[42px]">
+        {tool.mark}
+      </span>
+    );
+  }
+  return (
+    <span
+      style={{ "--brand": icon.hex } as React.CSSProperties}
+      className="flex h-[34px] w-[34px] shrink-0 items-center justify-center text-[rgba(242,237,228,0.72)] transition-colors duration-300 group-hover/tool:text-[var(--brand)] max-[700px]:h-[42px] max-[700px]:w-[42px]"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden className="h-[26px] w-[26px] max-[700px]:h-8 max-[700px]:w-8" fill="currentColor">
+        <path d={icon.path} />
+      </svg>
+    </span>
+  );
+}
+
 function ToolsTrack() {
   return (
     <div
@@ -212,11 +249,9 @@ function ToolsTrack() {
       {toolsLoop.map((tool, i) => (
         <div
           key={`${tool.mark}-${i}`}
-          className="flex w-[148px] shrink-0 flex-col gap-3 rounded-[14px] border border-[rgba(242,237,228,0.09)] bg-[rgba(242,237,228,0.028)] px-4 py-[18px] transition-all duration-300 hover:-translate-y-[3px] hover:border-[rgba(224,138,92,0.4)] hover:bg-[rgba(194,96,58,0.08)] max-[700px]:w-auto max-[700px]:gap-0 max-[700px]:border-none max-[700px]:bg-transparent max-[700px]:p-0"
+          className="group/tool flex w-[148px] shrink-0 flex-col gap-3 rounded-[14px] border border-[rgba(242,237,228,0.09)] bg-[rgba(242,237,228,0.028)] px-4 py-[18px] transition-all duration-300 hover:-translate-y-[3px] hover:border-[rgba(242,237,228,0.2)] hover:bg-[rgba(242,237,228,0.05)] max-[700px]:w-auto max-[700px]:gap-0 max-[700px]:border-none max-[700px]:bg-transparent max-[700px]:p-0"
         >
-          <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[8px] border border-[rgba(224,138,92,0.34)] font-mono text-[12.5px] text-accent-light max-[700px]:h-[42px] max-[700px]:w-[42px] max-[700px]:rounded-[11px] max-[700px]:text-[14px]">
-            {tool.mark}
-          </span>
+          <ToolMark tool={tool} />
           <div className="max-[700px]:hidden">
             <p className="m-0 mb-[3px] text-[14.5px] tracking-[-0.01em]">{tool.name}</p>
             <p className="m-0 font-mono text-[10px] tracking-[0.07em] text-text-faint uppercase">{tool.role}</p>

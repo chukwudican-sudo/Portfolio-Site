@@ -1,32 +1,19 @@
 import { getPortraitAssets } from "@/lib/assets";
+import { email, github, linkedin } from "@/lib/data";
+import { GithubIcon, LinkedinIcon, MailIcon } from "./icons";
 import { PointCloudPortrait } from "./PointCloudPortrait";
+
+/** Must stay in step with the `beam-run` animation duration in globals.css. */
+const BEAM_DUR = 4.6;
 
 export function Hero() {
   const portrait = getPortraitAssets();
   return (
     <section
-      className="flex min-h-[min(86vh,880px)] flex-wrap items-stretch gap-[22px] pt-[clamp(60px,10vh,132px)] pb-[clamp(8px,2vh,28px)] max-[700px]:min-h-0 max-[700px]:flex-col max-[700px]:items-center max-[700px]:justify-center max-[700px]:pt-[22px] max-[700px]:pb-0 max-[700px]:text-center"
+      className="flex min-h-[min(72vh,760px)] flex-wrap items-stretch gap-[22px] pt-[clamp(60px,10vh,132px)] pb-[clamp(8px,2vh,28px)] max-[700px]:min-h-0 max-[700px]:flex-col max-[700px]:items-center max-[700px]:justify-center max-[700px]:pt-[22px] max-[700px]:pb-0 max-[700px]:text-center"
     >
       {/* Text card */}
-      <div className="glass glass-flat-mobile relative order-1 flex min-h-[clamp(430px,58vh,600px)] min-w-0 flex-[7_1_440px] flex-col justify-center overflow-hidden rounded-[22px] p-[clamp(34px,3.6vw,62px)] max-[700px]:order-2 max-[700px]:min-h-0 max-[700px]:w-full max-[700px]:flex-none max-[700px]:overflow-visible max-[700px]:p-0">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 font-mono text-accent-light max-[700px]:hidden"
-        >
-          <span className="absolute right-[5%] bottom-[9%] text-[44px] opacity-[0.075] [animation:drift-a_34s_ease-in-out_infinite]">
-            {"{ }"}
-          </span>
-          <span className="absolute right-[16%] bottom-[7%] text-[26px] opacity-[0.06] [animation:drift-b_41s_ease-in-out_infinite]">
-            {"=>"}
-          </span>
-          <span className="absolute top-[8%] right-[7%] text-[28px] opacity-[0.06] [animation:drift-b_37s_ease-in-out_infinite]">
-            {"( )"}
-          </span>
-          <span className="absolute bottom-[5%] left-[3%] text-[22px] opacity-[0.05] [animation:drift-a_45s_ease-in-out_infinite]">
-            ;
-          </span>
-        </div>
-
+      <div className="glass glass-flat-mobile relative order-1 flex min-h-[clamp(380px,50vh,530px)] min-w-0 flex-[7_1_440px] flex-col justify-center overflow-hidden rounded-[22px] p-[clamp(34px,3.6vw,62px)] max-[700px]:order-2 max-[700px]:min-h-0 max-[700px]:w-full max-[700px]:flex-none max-[700px]:overflow-visible max-[700px]:p-0">
         <div className="relative">
           <div className="mb-[26px] flex items-center gap-[11px] max-[700px]:mb-5 max-[700px]:justify-center">
             <span
@@ -41,8 +28,7 @@ export function Hero() {
           <h1 className="m-0 mb-[18px] text-[clamp(37px,5.2vw,78px)] leading-[0.96] font-semibold tracking-[-0.05em] max-[700px]:mb-[10px] max-[700px]:text-[46px] max-[700px]:leading-[1.02] max-[700px]:tracking-[-0.045em]">
             Hi, I&rsquo;m{" "}
             <span className="bg-[linear-gradient(96deg,var(--color-accent-glow),var(--color-text-primary)_62%)] bg-clip-text pr-[0.08em] pb-[0.12em] text-[1.06em] leading-[1.28] font-normal tracking-normal text-transparent">
-              <span className="font-script-caps pr-[0.02em]">A</span>
-              <span className="font-script">lex</span>
+              <span className="font-script">Alex</span>
             </span>
           </h1>
 
@@ -54,18 +40,65 @@ export function Hero() {
             .
           </p>
 
-          <div className="flex flex-wrap gap-[14px] max-[700px]:justify-center max-[700px]:gap-[10px]">
+          <div className="flex flex-wrap items-center gap-[18px] max-[700px]:justify-center max-[700px]:gap-[14px]">
+            {/* direct links first, then the primary action, split by a rule */}
+            <div className="flex items-center gap-[6px]">
+              {[
+                { href: `mailto:${email}`, label: "Email", Icon: MailIcon, external: false },
+                { href: linkedin, label: "LinkedIn", Icon: LinkedinIcon, external: true },
+                { href: github, label: "GitHub", Icon: GithubIcon, external: true },
+              ].map(({ href, label, Icon, external }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  {...(external ? { target: "_blank", rel: "noopener" } : {})}
+                  className="flex h-11 w-11 items-center justify-center rounded-[10px] text-text-secondary transition-colors duration-250 hover:bg-[rgba(242,237,228,0.055)] hover:text-text-primary"
+                >
+                  <Icon size={19} />
+                </a>
+              ))}
+            </div>
+
+            <span aria-hidden className="h-6 w-px shrink-0 bg-[rgba(242,237,228,0.14)]" />
+
             <a
               href="#projects"
-              className="beam inline-flex items-center gap-[9px] rounded-[6px] bg-accent px-6 py-[14px] text-[14.5px] font-medium text-surface shadow-[0_14px_30px_-14px_rgba(194,96,58,0.9)] transition-all duration-250 hover:-translate-y-[3px] hover:bg-accent-light max-[700px]:min-h-11 max-[700px]:px-[18px] max-[700px]:py-3 max-[700px]:text-[13.5px]"
+              className="beam inline-flex h-11 items-center gap-[10px] rounded-full border border-[rgba(242,237,228,0.16)] px-[22px] text-[14.5px] font-medium text-text-primary transition-colors duration-250 hover:border-[rgba(242,237,228,0.32)] hover:bg-[rgba(242,237,228,0.045)]"
             >
-              View projects <span className="font-mono text-[12.5px]">→</span>
-            </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center rounded-[6px] border border-[rgba(242,237,228,0.18)] px-6 py-[14px] text-[14.5px] whitespace-nowrap text-text-primary transition-all duration-250 hover:border-[rgba(224,138,92,0.55)] hover:bg-[rgba(194,96,58,0.10)] max-[700px]:min-h-11 max-[700px]:px-[18px] max-[700px]:py-3 max-[700px]:text-[13.5px]"
-            >
-              Get in touch
+              <svg className="beam-track" aria-hidden>
+                {/* halo the dot casts on the border it is passing over */}
+                <rect
+                  pathLength={100}
+                  strokeDasharray="0.16 99.84"
+                  strokeWidth={5}
+                  opacity={0.24}
+                  style={{ filter: "blur(3.5px)" }}
+                />
+                {/* the trail: short dashes a few hundredths of a second behind
+                    the head, fading as they go, so it reads as one streak */}
+                {/* A negative delay starts a copy further into the cycle, which
+                    puts it AHEAD on the path. To sit behind the head, each copy
+                    is offset by nearly a whole cycle instead — same phase, other
+                    direction. BEAM_DUR must match the CSS animation duration. */}
+                {Array.from({ length: 40 }, (_, i) => (
+                  <rect
+                    key={i}
+                    pathLength={100}
+                    // a dash this short plus a round cap is a dot, not a capsule
+                    strokeDasharray="0.14 99.86"
+                    strokeWidth={1.5 - i * 0.026}
+                    opacity={i === 0 ? 1 : Math.pow(1 - i / 40, 2.1) * 0.5}
+                    style={{
+                      // spaced tighter than the dot is wide, so the trail reads
+                      // as one streak rather than a row of separate blobs
+                      animationDelay: `${i === 0 ? 0 : -(BEAM_DUR - i * 0.019)}s`,
+                      filter: i > 6 ? `blur(${(i - 6) * 0.075}px)` : undefined,
+                    }}
+                  />
+                ))}
+              </svg>
+              View my work <span className="font-mono text-[12.5px]">→</span>
             </a>
           </div>
         </div>
@@ -73,7 +106,7 @@ export function Hero() {
 
       {/* ID card */}
       <div
-        className="relative order-2 flex min-h-[clamp(430px,58vh,600px)] min-w-0 flex-[5_1_330px] flex-col gap-[clamp(12px,1.2vw,18px)] rounded-[22px] border border-[rgba(242,237,228,0.13)] bg-[linear-gradient(200deg,rgba(44,32,26,0.72),rgba(16,15,14,0.86)_64%)] p-[clamp(16px,1.4vw,22px)] shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_34px_76px_-44px_rgba(0,0,0,0.92)] backdrop-blur-[26px]
+        className="relative order-2 flex min-h-[clamp(380px,50vh,530px)] min-w-0 flex-[5_1_330px] flex-col gap-[clamp(12px,1.2vw,18px)] rounded-[22px] border border-[rgba(242,237,228,0.13)] bg-[linear-gradient(200deg,rgba(44,32,26,0.72),rgba(16,15,14,0.86)_64%)] p-[clamp(16px,1.4vw,22px)] shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_34px_76px_-44px_rgba(0,0,0,0.92)] backdrop-blur-[26px]
         max-[700px]:order-1 max-[700px]:mb-[26px] max-[700px]:h-[188px] max-[700px]:min-h-0 max-[700px]:w-[188px] max-[700px]:flex-none max-[700px]:gap-0 max-[700px]:rounded-full max-[700px]:bg-[radial-gradient(circle_at_50%_30%,rgba(194,96,58,0.42),rgba(16,15,14,0.9)_72%)] max-[700px]:p-[5px] max-[700px]:shadow-[0_0_60px_12px_rgba(194,96,58,0.28),inset_0_1px_0_rgba(255,255,255,0.12)]"
       >
         <div className="flex items-center gap-[14px] px-[6px] pt-0.5 max-[700px]:hidden">

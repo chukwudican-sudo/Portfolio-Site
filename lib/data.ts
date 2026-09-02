@@ -276,7 +276,7 @@ export const posts: Post[] = [
     title: "Getting an LLM to return data, not prose",
     excerpt:
       "Resumi asks Claude to rewrite a resume against a job posting. The first version parsed free text and broke constantly. Forced tool-use fixed it properly.",
-    date: "Aug 2026",
+    date: "Aug 14, 2026",
     readTime: "6 min",
     body: [
       {
@@ -332,7 +332,7 @@ export const posts: Post[] = [
     title: "A rate limiter that was wrong for the first request only",
     excerpt:
       "I built three rate-limiting algorithms to learn Python properly. One had a bug that every obvious test passed straight over.",
-    date: "Aug 2026",
+    date: "Aug 2, 2026",
     readTime: "5 min",
     body: [
       {
@@ -388,7 +388,7 @@ export const posts: Post[] = [
     title: "Why row-level security beat my API guards",
     excerpt:
       "I had auth checks in every endpoint and kept reintroducing the same bug. Moving the rules into Postgres deleted the whole category.",
-    date: "Jul 2026",
+    date: "Jul 19, 2026",
     readTime: "6 min",
     body: [
       {
@@ -435,20 +435,22 @@ export const posts: Post[] = [
   },
 ];
 
-export type Tool = { mark: string; name: string; role: string };
+export type Tool = { mark: string; slug: string; name: string; role: string };
 
 export const tools: Tool[] = [
-  { mark: "py", name: "Python", role: "apis + scripts" },
-  { mark: "TS", name: "TypeScript", role: "typed ui" },
-  { mark: "( )", name: "React", role: "interfaces" },
-  { mark: "N", name: "Next.js", role: "app framework" },
-  { mark: "{ }", name: "Spring Boot", role: "backend" },
-  { mark: "=>", name: "FastAPI", role: "python apis" },
-  { mark: "DB", name: "PostgreSQL", role: "relational store" },
-  { mark: "::", name: "Supabase", role: "auth + data" },
-  { mark: "~", name: "Tailwind", role: "styling" },
-  { mark: "Y", name: "Git", role: "version control" },
-  { mark: "J", name: "Java", role: "services" },
+  { mark: "py", slug: "python", name: "Python", role: "apis + scripts" },
+  { mark: "TS", slug: "typescript", name: "TypeScript", role: "typed ui" },
+  { mark: "( )", slug: "react", name: "React", role: "interfaces" },
+  { mark: "N", slug: "nextdotjs", name: "Next.js", role: "app framework" },
+  { mark: "{ }", slug: "springboot", name: "Spring Boot", role: "backend" },
+  { mark: "=>", slug: "fastapi", name: "FastAPI", role: "python apis" },
+  { mark: "DB", slug: "postgresql", name: "PostgreSQL", role: "relational store" },
+  { mark: "::", slug: "supabase", name: "Supabase", role: "auth + data" },
+  { mark: "~", slug: "tailwindcss", name: "Tailwind", role: "styling" },
+  { mark: "Y", slug: "git", name: "Git", role: "version control" },
+  // Oracle had Java removed from Simple Icons over trademark; openjdk is the
+  // same language and is the maintained entry.
+  { mark: "J", slug: "openjdk", name: "Java", role: "services" },
 ];
 
 export const toolsLoop = [...tools, ...tools];
@@ -462,7 +464,7 @@ export const nav = [
   { href: "#writing", label: "Blog", id: "writing" },
 ] as const;
 
-export const email = "alex.ndubuisi@ontariotechu.net";
+export const email = "chukwudi.can@gmail.com";
 export const linkedin = "https://www.linkedin.com/in/chukwudi-ndubuisi/";
 export const github = "https://github.com/chukwudican-sudo";
 export const resumeHref = "/assets/Chukwudi_Alex_Software_Engineering_Resume.pdf";

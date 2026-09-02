@@ -5,7 +5,7 @@ import Link from "next/link";
 import { posts } from "@/lib/data";
 import { ImageSlot } from "./ImageSlot";
 
-export function Writing() {
+export function Writing({ covers = {} }: { covers?: Record<string, string> }) {
   const ref = useReveal<HTMLElement>();
   const gridRef = useReveal<HTMLDivElement>();
   return (
@@ -22,48 +22,51 @@ export function Writing() {
             Decisions I had to think hard about, written down while they were still fresh.
           </p>
         </div>
-        <a href="#writing" className="shrink-0 font-mono text-[11.5px] tracking-[0.06em] text-accent-light whitespace-nowrap uppercase max-[700px]:hidden">
-          All posts →
-        </a>
       </div>
 
-      <div ref={gridRef} className="reveal-group flex flex-wrap items-stretch gap-[22px] max-[700px]:flex-col max-[700px]:gap-6">
+      {/* The cover is the only framed element — title, excerpt and date sit on
+          the page itself rather than inside a card. */}
+      <div
+        ref={gridRef}
+        className="reveal-group grid grid-cols-3 gap-x-[34px] gap-y-10 max-[700px]:grid-cols-1 max-[700px]:gap-y-9"
+      >
         {posts.map((post, i) => (
           <Link
             key={post.id}
             href={`/writing/${post.id}`}
             style={{ "--delay": `${i * 90}ms` } as React.CSSProperties}
-            className="blur-in glass-accent glass-hover glass-flat-mobile flex min-w-0 flex-1 basis-[290px] flex-col overflow-hidden rounded-[18px] max-[700px]:flex-none max-[700px]:basis-auto max-[700px]:flex-row max-[700px]:items-start max-[700px]:gap-[14px] max-[700px]:rounded-none max-[700px]:p-0"
+            className="blur-in group/post flex min-w-0 flex-col outline-none"
           >
-            <div className="relative aspect-[16/10] overflow-hidden border-b border-[rgba(242,237,228,0.07)] bg-[radial-gradient(420px_220px_at_60%_30%,rgba(194,96,58,0.22),transparent_70%)] max-[700px]:mt-0.5 max-[700px]:aspect-[16/9] max-[700px]:w-[84px] max-[700px]:shrink-0 max-[700px]:rounded-[9px] max-[700px]:border-none">
-              <ImageSlot label="Cover image" />
+            <div className="relative aspect-[16/10] overflow-hidden rounded-[14px] border border-[rgba(242,237,228,0.09)] bg-[rgba(255,255,255,0.014)] transition-colors duration-300 group-hover/post:border-[rgba(242,237,228,0.2)]">
+              {covers[post.id] ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={covers[post.id]} alt="" loading="lazy" className="h-full w-full object-cover" />
+              ) : (
+                <ImageSlot label="Cover image" />
+              )}
             </div>
-            <div className="flex flex-1 flex-col gap-[11px] p-6 pb-[26px] max-[700px]:min-w-0 max-[700px]:gap-[7px] max-[700px]:p-0">
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="text-pretty m-0 text-[18.5px] leading-[1.35] font-semibold tracking-[-0.02em] max-[700px]:text-[14px] max-[700px]:leading-[1.32] max-[700px]:font-bold">
-                  {post.title} <span className="font-mono text-[12px] text-accent-light max-[700px]:hidden">↗</span>
-                </h3>
-                <span className="hidden shrink-0 pt-0.5 font-mono text-[11.5px] whitespace-nowrap text-text-faint max-[700px]:block">
-                  {post.date}
-                </span>
-              </div>
-              <p className="text-pretty m-0 text-[14.5px] leading-[1.6] text-text-muted max-[700px]:line-clamp-2 max-[700px]:text-[13px] max-[700px]:leading-[1.5]">
-                {post.excerpt}
-              </p>
-              <div className="mt-auto flex justify-between gap-[14px] pt-[14px] font-mono text-[10px] tracking-[0.09em] text-text-faint uppercase max-[700px]:hidden">
-                <span>{post.date}</span>
-                <span>{post.readTime}</span>
-              </div>
-            </div>
+
+            <h3 className="text-pretty m-0 mt-[22px] text-[19.5px] leading-[1.3] font-semibold tracking-[-0.02em] text-text-primary max-[700px]:mt-4 max-[700px]:text-[18px]">
+              {post.title}{" "}
+              <span className="ml-0.5 inline-block text-[13px] text-text-dim transition-colors duration-250 group-hover/post:text-accent-light">
+                ↗
+              </span>
+            </h3>
+
+            <p className="text-pretty m-0 mt-[10px] line-clamp-2 text-[15px] leading-[1.6] text-text-muted">
+              {post.excerpt}
+            </p>
+
+            <span className="mt-[18px] text-[14px] text-text-faint max-[700px]:mt-3">{post.date}</span>
           </Link>
         ))}
       </div>
 
       <a
         href="#writing"
-        className="hidden self-center text-[13.5px] text-text-dim max-[700px]:mt-1 max-[700px]:inline-flex max-[700px]:min-h-11 max-[700px]:items-center max-[700px]:justify-center"
+        className="mt-2 inline-flex items-center justify-center gap-2 self-center text-[15px] text-text-dim transition-colors duration-250 hover:text-text-primary max-[700px]:min-h-11"
       >
-        Read all posts  ↗
+        Read all posts <span className="text-[13px]">↗</span>
       </a>
     </section>
   );

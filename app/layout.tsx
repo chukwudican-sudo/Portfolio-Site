@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono, Pacifico, Lobster_Two } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono, Lobster } from "next/font/google";
 import "./globals.css";
 
 // `adjustFontFallback` is off so glyphs outside the latin subset — notably the
@@ -14,23 +14,14 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 
-// Script accent for the name and the phrase the tagline turns on. Pacifico is
-// the same face the reference site uses.
-const pacifico = Pacifico({
+// Script accent for the name and the phrase the tagline turns on. The
+// reference site uses Pacifico, but its capital A is a closed swash that reads
+// as a lowercase a. Lobster is the same bold connected script at the same
+// weight, with a proper pointed capital.
+const lobster = Lobster({
   variable: "--font-script",
   subsets: ["latin"],
   weight: ["400"],
-  adjustFontFallback: false,
-});
-
-// Pacifico's capital A is a swashed form that reads as a big lowercase a, so
-// the initial is set in Lobster Two — same weight and slant, but a clean
-// triangular A — and only the rest of the word stays Pacifico.
-const lobsterTwo = Lobster_Two({
-  variable: "--font-script-caps",
-  subsets: ["latin"],
-  weight: ["700"],
-  style: ["italic"],
   adjustFontFallback: false,
 });
 
@@ -70,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${pacifico.variable} ${lobsterTwo.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${lobster.variable}`}>
       {/* Browser extensions commonly inject attributes onto <body> before
           React hydrates (ColorZilla's cz-shortcut-listen, Grammarly, etc.),
           which trips a hydration warning. This suppresses that comparison for

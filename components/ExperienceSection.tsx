@@ -7,6 +7,9 @@ import { ExperienceCard } from "./ExperienceCard";
 import { Overlay } from "./Overlay";
 
 const RAIL_PAD = 6;
+// kept in sync with the markup below so the light lands on the trail's tip
+const GLOW = 16;
+const SPARK = 12;
 
 export function ExperienceSection({ logos = {} }: { logos?: Record<string, string> }) {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -44,27 +47,65 @@ export function ExperienceSection({ logos = {} }: { logos?: Record<string, strin
         const c = (ar.top - rr.top + ar.height / 2) / scale;
         dotTops.current[i] = c;
         dot.style.opacity = "1";
-        dot.style.top = `${c - 4.5}px`;
+        dot.style.top = `${c - 2}px`;
       });
     };
 
-    const scan = () => {
+    // The light chases the scroll position rather than being pinned to it, so
+    // a fast scroll leaves it behind and it eases in afterwards. Done per frame
+    // in JS rather than with a CSS transition: a transition restarts on every
+    // scroll event, which on a continuous gesture keeps resetting the ease and
+    // ends up tracking almost exactly.
+    let targetP = 0;
+    let curP = -999;   // sentinel: -0.x is now a legitimate position
+    let ease = 0;
+
+    const measure = () => {
       const rail = railRef.current;
-      if (!rail) return;
+      if (!rail) return null;
       const rr = rail.getBoundingClientRect();
       const scale = scaleOf(rail);
-      // work entirely in the rail's own coordinate space
       const span = Math.max(1, rail.offsetHeight - RAIL_PAD * 2);
       const midpoint = (window.innerHeight * 0.5 - rr.top) / scale;
       let p = (midpoint - RAIL_PAD) / span;
       p = Math.max(0, Math.min(1, p));
+      return { p, span };
+    };
+
+    const scan = () => {
+      const m = measure();
+      if (!m) return;
+      targetP = m.p;
+      if (curP === -999) curP = targetP;
+      if (!ease) ease = requestAnimationFrame(step);
+    };
+
+    const step = () => {
+      ease = 0;
+      const m = measure();
+      if (!m) return;
+      const { span } = m;
+
+      // exponential approach: quick at first, visibly decelerating into place
+      curP += (targetP - curP) * 0.055;
+      if (Math.abs(targetP - curP) < 0.0004) curP = targetP;
+      else ease = requestAnimationFrame(step);
+
+      const p = curP;
       const y = RAIL_PAD + p * span;
 
       if (trailRef.current) trailRef.current.style.height = `${p * span}px`;
-      for (const ref of [headRef, sparkRef]) {
-        if (!ref.current) continue;
-        ref.current.style.top = `${y - 20}px`;
-        ref.current.style.opacity = p <= 0 ? "0" : p >= 1 ? (ref === headRef ? "0.3" : "0.25") : "1";
+
+      const vis = p <= 0 ? "0" : "1";
+      // bloom centred on the tip
+      if (headRef.current) {
+        headRef.current.style.top = `${y - GLOW / 2}px`;
+        headRef.current.style.opacity = vis;
+      }
+      // spark hangs above the tip so its bright end sits exactly on it
+      if (sparkRef.current) {
+        sparkRef.current.style.top = `${y - SPARK}px`;
+        sparkRef.current.style.opacity = vis;
       }
       dotEls.current.forEach((dot, i) => {
         if (!dot) return;
@@ -80,6 +121,7 @@ export function ExperienceSection({ logos = {} }: { logos?: Record<string, strin
 
     const sync = () => {
       place();
+      curP = -999; // resize/layout change: adopt the new position without easing
       scan();
     };
     sync();
@@ -94,6 +136,7 @@ export function ExperienceSection({ logos = {} }: { logos?: Record<string, strin
       window.removeEventListener("resize", sync);
       window.clearTimeout(t1);
       window.clearTimeout(t2);
+      if (ease) cancelAnimationFrame(ease);
     };
   }, []);
 
@@ -170,24 +213,24 @@ export function ExperienceSection({ logos = {} }: { logos?: Record<string, strin
         <div
           ref={railRef}
           aria-hidden
-          className="relative min-h-20 flex-[0_0_12px] self-stretch max-[700px]:flex-[0_0_6px]"
+          className="relative min-h-20 flex-[0_0_6px] self-stretch max-[700px]:flex-[0_0_4px]"
         >
-          <span className="absolute top-1.5 bottom-1.5 left-[5px] w-0.5 rounded-full bg-[rgba(242,237,228,0.09)] max-[700px]:left-[2px]" />
+          <span className="absolute top-1.5 bottom-1.5 left-[2.5px] w-px rounded-full bg-[rgba(242,237,228,0.075)] max-[700px]:left-[1.5px]" />
           {/* gradient trail, filled to the scroll position */}
           <span
             ref={trailRef}
-            className="absolute top-1.5 left-[5px] max-[700px]:left-[2px] h-0 w-0.5 rounded-full bg-[linear-gradient(180deg,rgba(194,96,58,0.10)_0%,rgba(194,96,58,0.42)_46%,rgba(224,138,92,0.85)_84%,#F0B487_100%)] transition-[height] duration-[140ms] ease-linear"
+            className="absolute top-1.5 left-[2.5px] max-[700px]:left-[1.5px] h-0 w-px rounded-full bg-[linear-gradient(180deg,rgba(194,96,58,0.10)_0%,rgba(194,96,58,0.42)_46%,rgba(224,138,92,0.85)_84%,#F0B487_100%)] transition-none"
           />
           {/* soft glow head + bright spark riding the head of the trail */}
           <span
             ref={headRef}
             style={{ opacity: 0 }}
-            className="absolute -left-[14px] top-0 h-10 w-10 max-[700px]:-left-[7px] max-[700px]:h-5 max-[700px]:w-5 rounded-full bg-[radial-gradient(circle,rgba(255,240,228,0.85)_0%,rgba(240,180,132,0.40)_20%,rgba(224,138,92,0.16)_40%,rgba(194,96,58,0)_66%)] transition-[top,opacity] duration-[140ms] ease-linear"
+            className="absolute -left-[5px] top-0 h-4 w-4 max-[700px]:-left-[4px] max-[700px]:h-3 max-[700px]:w-3 rounded-full bg-[radial-gradient(circle,rgba(255,240,228,0.85)_0%,rgba(240,180,132,0.40)_20%,rgba(224,138,92,0.16)_40%,rgba(194,96,58,0)_66%)] transition-[opacity] duration-300"
           />
           <span
             ref={sparkRef}
             style={{ opacity: 0 }}
-            className="absolute top-0 left-[4.5px] max-[700px]:left-[1.5px] h-7 w-[3px] rounded-[3px] bg-[linear-gradient(180deg,rgba(240,180,132,0)_0%,rgba(246,211,188,0.9)_42%,#E08A5C_76%,rgba(194,96,58,0)_100%)] shadow-[0_0_14px_3px_rgba(224,138,92,0.45)] transition-[top,opacity] duration-[140ms] ease-linear"
+            className="absolute top-0 left-[2.5px] max-[700px]:left-[1.5px] h-3 w-px rounded-full bg-[linear-gradient(180deg,rgba(240,180,132,0)_0%,rgba(240,180,132,0.55)_45%,#FFF1E2_100%)] shadow-[0_0_10px_2px_rgba(224,138,92,0.5)] transition-[opacity] duration-300"
           />
           {experience.map((role, i) => (
             <span
@@ -196,7 +239,7 @@ export function ExperienceSection({ logos = {} }: { logos?: Record<string, strin
                 dotEls.current[i] = el;
               }}
               style={{ opacity: 0, background: "#171513", borderColor: "rgba(242,237,228,0.18)" }}
-              className="absolute left-0.5 h-2 w-2 max-[700px]:h-1.5 max-[700px]:w-1.5 rounded-full border transition-[background,border-color,box-shadow] duration-[400ms] max-[700px]:left-0"
+              className="absolute left-[1px] h-1 w-1 max-[700px]:left-[0.5px] max-[700px]:h-[3px] max-[700px]:w-[3px] rounded-full border transition-[background,border-color,box-shadow] duration-[400ms] "
             />
           ))}
         </div>

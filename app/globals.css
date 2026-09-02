@@ -81,25 +81,6 @@ a {
   }
 }
 
-@keyframes drift-a {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(16px, -20px, 0);
-  }
-}
-
-@keyframes drift-b {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(-18px, 16px, 0);
-  }
-}
 
 @keyframes pulse-dot {
   0%,
@@ -232,12 +213,12 @@ a {
 }
 
 .glass-accent {
-  border: 1px solid rgba(240, 196, 168, 0.115);
+  border: 1px solid rgba(242, 237, 228, 0.085);
   background: linear-gradient(
     160deg,
-    rgba(224, 138, 92, 0.085),
-    rgba(255, 255, 255, 0.022) 44%,
-    rgba(255, 255, 255, 0.006)
+    rgba(255, 255, 255, 0.055),
+    rgba(255, 255, 255, 0.016) 46%,
+    rgba(255, 255, 255, 0.005)
   );
   backdrop-filter: blur(26px) saturate(150%);
   -webkit-backdrop-filter: blur(26px) saturate(150%);
@@ -245,6 +226,30 @@ a {
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     inset 0 -1px 0 rgba(0, 0, 0, 0.34),
     0 34px 76px -44px rgba(0, 0, 0, 0.92);
+}
+
+/* Double edge: a second hairline set in from the card's own border. The inner
+   ring inherits the radius rather than computing radius-minus-inset, which at
+   5px is visually indistinguishable and keeps this working on every tile
+   regardless of which radius it uses. */
+.glass,
+.glass-accent {
+  position: relative;
+}
+
+.glass::after,
+.glass-accent::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: inherit;
+  border: 1px solid rgba(242, 237, 228, 0.052);
+  pointer-events: none;
+}
+
+/* Opt out of the double edge (the experience rail cards read cleaner flat). */
+.edge-none::after {
+  display: none;
 }
 
 .glass-hover {
@@ -273,127 +278,72 @@ a {
   box-shadow: 0 26px 54px -30px rgba(0, 0, 0, 0.9);
 }
 
+/* Border beam: a lit dot with a fading trail, running the element's outline.
+   Drawn as a dashed stroke on the shape rather than a rotating conic gradient —
+   a conic advances by angle about the centre, so on a pill it sprints along the
+   flat edges and stalls at the caps. A dash travels by arc length.
 
-/* Border beam: a highlight that travels around an element's outline.
-   A conic gradient is rotated by animating a registered custom property, then
-   masked to just the border ring — so it rides the shape whatever its radius,
-   and costs one compositor-friendly paint rather than a JS loop. */
-@property --beam-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
+   An absolutely positioned child is laid out against the PADDING box, so the
+   svg already starts inside the 1px border. The rect therefore extends half a
+   pixel back OUT to land on the border's centreline, and
+   `pathLength="100"` normalises the perimeter so speed and size hold at any
+   button width. The trail is many short dashes a few hundredths of a second
+   apart, each dimmer than the last. */
 .beam {
   position: relative;
   isolation: isolate;
 }
 
-/* Two layers on the same angle: a crisp ring, and a blurred copy behind it for
-   the halo. On a saturated fill a hairline alone has almost no contrast. */
-.beam::before,
-.beam::after {
-  content: "";
+.beam-track {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  padding: 2px; /* ring thickness */
-  background: conic-gradient(
-    from var(--beam-angle),
-    transparent 0deg,
-    transparent 268deg,
-    rgba(255, 236, 220, 0.35) 300deg,
-    rgba(255, 252, 248, 1) 338deg,
-    rgba(255, 236, 220, 0.35) 352deg,
-    transparent 360deg
-  );
-  /* keep only the ring: full box minus the content box */
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  animation: beam-spin 6s linear infinite;
+  /* an <svg> is a replaced element: without explicit sizing it falls back to
+     its intrinsic 300x150 and inset:0 alone will not stretch it */
+  width: 100%;
+  height: 100%;
+  overflow: visible;
   pointer-events: none;
 }
 
-.beam::before {
-  z-index: 2;
+.beam-track rect {
+  x: -0.5px;
+  y: -0.5px;
+  width: calc(100% + 1px);
+  height: calc(100% + 1px);
+  rx: 21.5px;
+  ry: 21.5px;
+  fill: none;
+  stroke: #FFF8F0;
+  stroke-linecap: round;
+  animation: beam-run 4.6s linear infinite;
 }
 
-/* the halo — same sweep, blurred and pushed out slightly */
-.beam::after {
-  inset: -2px;
-  padding: 4px;
-  filter: blur(5px);
-  opacity: 0.85;
-  z-index: 1;
-}
-
-@keyframes beam-spin {
+@keyframes beam-run {
   to {
-    --beam-angle: 360deg;
+    stroke-dashoffset: -100;
   }
 }
 
-
-/* Skill chips — brushed metal.
-   Four cues do the work: a vertical value gradient (light above, dark below),
-   a bright top edge reading as specular, a dark bottom edge reading as
-   occlusion, and a soft diagonal sheen across the face. Kept neutral so it
-   reads as metal beside the terracotta accents rather than competing with
-   them; it warms toward the accent only when its card is hovered. */
-.chip {
-  position: relative;
-  isolation: isolate;
-  border-radius: 8px;
-  border: 1px solid rgba(242, 237, 228, 0.1);
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.09) 0%,
-      rgba(255, 255, 255, 0.028) 45%,
-      rgba(0, 0, 0, 0.05) 100%
-    ),
-    rgba(242, 237, 228, 0.035);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-    0 1px 2px rgba(0, 0, 0, 0.32);
-  color: #D8D0C4;
-  transition:
-    border-color 0.3s ease,
-    color 0.3s ease,
-    box-shadow 0.3s ease;
+@media (prefers-reduced-motion: reduce) {
+  .beam-track {
+    display: none;
+  }
 }
 
-/* the sheen: a narrow diagonal band, never strong enough to read as a stripe */
-.chip::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    128deg,
-    transparent 18%,
-    rgba(255, 255, 255, 0.07) 42%,
-    rgba(255, 255, 255, 0.02) 54%,
-    transparent 72%
-  );
-  pointer-events: none;
-  z-index: -1;
+/* Skill chips: a flat filled pill. No border, no gradient, no sheen — the
+   fill and the weight of the label carry it. */
+.chip {
+  border-radius: 7px;
+  background: rgba(242, 237, 228, 0.075);
+  color: #EFEAE1;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .group:hover .chip {
-  border-color: rgba(224, 138, 92, 0.28);
-  color: #F2EDE4;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-    0 1px 3px rgba(0, 0, 0, 0.38);
+  background: rgba(242, 237, 228, 0.115);
+  color: #FFFFFF;
 }
 
 .text-pretty {
@@ -416,7 +366,6 @@ a {
   }
 }
 
-
 /* Some cards drop their glass chrome entirely below 700px (hero text panel,
    writing list rows). Tailwind's `max-[700px]:border-none` etc. can't win
    against .glass/.glass-accent — both are plain classes, but Tailwind's
@@ -429,6 +378,10 @@ a {
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+
+  .glass-flat-mobile::after {
+    display: none;
   }
 }
 
@@ -532,12 +485,8 @@ a {
   }
 }
 
-/* Two script faces: the body of the name in Pacifico, its capital in Lobster
-   Two (see layout.tsx for why). Declared here rather than in @theme because
-   both names collide with the variables next/font already sets on <html>. */
+/* Declared here rather than in @theme because the name collides with the
+   variable next/font already sets on <html>. */
 .font-script {
   font-family: var(--font-script), ui-rounded, cursive;
-}
-.font-script-caps {
-  font-family: var(--font-script-caps), ui-rounded, cursive;
 }

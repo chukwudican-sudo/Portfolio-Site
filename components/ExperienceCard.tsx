@@ -76,8 +76,8 @@ export function ExperienceCard({
     <span
       ref={markRef}
       aria-hidden
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-[rgba(224,138,92,0.26)] font-mono tracking-[0.05em] text-accent-light ${
-        logo ? "" : "bg-[linear-gradient(150deg,rgba(194,96,58,0.20),rgba(255,255,255,0.028))]"
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-[11px] font-mono tracking-[0.05em] ${
+        logo ? "" : "border border-[rgba(242,237,228,0.14)] bg-[rgba(242,237,228,0.05)] text-text-secondary"
       } ${
         expanded
           ? "h-[52px] w-[52px] text-[15px]"
@@ -101,9 +101,9 @@ export function ExperienceCard({
         <span className="mx-[7px] font-normal text-text-faint">•</span>
         {role.company}
       </p>
-      <p className="m-0 mt-[3px] font-mono text-[12.5px] text-text-faint max-[700px]:text-[11px]">
+      <p className="m-0 mt-[4px] text-[14.5px] text-text-dim max-[700px]:text-[12.5px]">
         {role.date}
-        <span className="mx-[6px]">·</span>
+        <span className="mx-[7px] text-text-faint">•</span>
         {role.location}
       </p>
     </div>
@@ -115,7 +115,7 @@ export function ExperienceCard({
         <span
           key={chip}
           style={{ "--delay": `${140 + i * 55}ms` } as React.CSSProperties}
-          className="chip blur-in blur-in-left px-[11px] py-[6px] text-[12.5px] font-medium max-[700px]:px-[9px] max-[700px]:py-1 max-[700px]:text-[11.5px]"
+          className="chip blur-in blur-in-left px-[11px] py-[6px] text-[13px] font-semibold max-[700px]:px-[9px] max-[700px]:py-1 max-[700px]:text-[12px]"
         >
           {chip}
         </span>
@@ -187,7 +187,7 @@ export function ExperienceCard({
       onPointerEnter={onPointerEnter}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      className="group reveal-group glass glass-hover-static relative cursor-pointer overflow-hidden rounded-[18px] p-6 outline-none focus-visible:border-[rgba(224,138,92,0.55)] max-[700px]:rounded-[16px] max-[700px]:p-4"
+      className="group reveal-group relative cursor-pointer overflow-hidden rounded-[14px] border border-[rgba(242,237,228,0.085)] p-6 outline-none transition-colors duration-300 hover:border-[rgba(242,237,228,0.17)] focus-visible:border-[rgba(242,237,228,0.3)] max-[700px]:rounded-[12px] max-[700px]:p-4"
     >
       <span
         ref={glowRef}

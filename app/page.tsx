@@ -3,25 +3,28 @@ import { Hero } from "@/components/Hero";
 import { Snapshot } from "@/components/Snapshot";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
-import { getPlacePhotos, getRoleLogos } from "@/lib/assets";
-import { experience } from "@/lib/data";
+import { getPlacePhotos, getPostCovers, getRoleLogos } from "@/lib/assets";
+import { experience, posts } from "@/lib/data";
 import { Writing } from "@/components/Writing";
 import { Places } from "@/components/Places";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { Backdrop } from "@/components/Backdrop";
 
 export default function Home() {
   const roleLogos = getRoleLogos(experience.map((r) => r.id));
   const placePhotos = getPlacePhotos();
+  const postCovers = getPostCovers(posts.map((p) => p.id));
 
   return (
     <div
       className="relative min-h-screen overflow-hidden bg-bg"
       style={{
         backgroundImage:
-          "radial-gradient(1300px 760px at 50% -14%, rgba(224,138,92,0.085), transparent 64%), radial-gradient(900px 560px at 10% 6%, rgba(194,96,58,0.042), transparent 62%), radial-gradient(1000px 700px at 92% 40%, rgba(194,96,58,0.022), transparent 66%)",
+          "radial-gradient(1300px 760px at 50% -14%, rgba(224,138,92,0.045), transparent 64%), radial-gradient(900px 560px at 10% 6%, rgba(194,96,58,0.042), transparent 62%), radial-gradient(1000px 700px at 92% 40%, rgba(194,96,58,0.022), transparent 66%)",
       }}
     >
+      <Backdrop />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.2]"
@@ -43,13 +46,13 @@ export default function Home() {
 
       <main
         id="top"
-        className="relative flex w-full flex-col gap-[clamp(92px,11vh,164px)] px-4 sm:px-[max(28px,calc((100%-var(--content-max))/2))]"
+        className="relative z-10 flex w-full flex-col gap-[clamp(92px,11vh,164px)] px-4 sm:px-[max(28px,calc((100%-var(--content-max))/2))]"
       >
         <Hero />
         <Snapshot />
         <ProjectsSection />
         <ExperienceSection logos={roleLogos} />
-        <Writing />
+        <Writing covers={postCovers} />
         <Places photos={placePhotos} />
         <Contact />
         <Footer />

@@ -71,3 +71,21 @@ export function getPlacePhotos(): string[] {
   }
   return files.map((f) => `/assets/places/${f}`);
 }
+
+/**
+ * Which posts have a cover image. Same server-side resolution as the logos, so
+ * a post without one falls back to the placeholder slot instead of 404ing.
+ */
+export function getPostCovers(ids: string[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const id of ids) {
+    try {
+      if (fs.existsSync(path.join(ASSET_DIR, "writing", `${id}.png`))) {
+        out[id] = `/assets/writing/${id}.png`;
+      }
+    } catch {
+      /* unreadable dir — treat as absent */
+    }
+  }
+  return out;
+}
