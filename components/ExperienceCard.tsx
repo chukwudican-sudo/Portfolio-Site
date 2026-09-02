@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useReveal } from "@/hooks/useReveal";
 import type { ExperienceRole } from "@/lib/data";
+import { ArrowUpRightIcon } from "./icons";
 
 /**
  * One role, in one of two presentations from a single content source:
@@ -160,7 +161,7 @@ export function ExperienceCard({
             rel="noopener"
             className="font-mono text-[11.5px] tracking-[0.06em] text-accent-light uppercase"
           >
-            {role.locationHref.replace("https://", "")} ↗
+            {role.locationHref.replace("https://", "")} <ArrowUpRightIcon size={12} className="inline-block" />
           </a>
         )}
       </article>

@@ -145,6 +145,28 @@ export function LinkedinIcon({ size = 16, className, strokeWidth = 1.7 }: IconPr
   );
 }
 
+/**
+ * Diagonal "opens elsewhere" arrow.
+ *
+ * Drawn rather than typed: U+2197 has an emoji presentation variant, and iOS
+ * picks it by default — the character renders as a blue emoji tile in Safari.
+ */
+export function ArrowUpRightIcon({ size = 13, className, strokeWidth = 2 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden
+      {...base(strokeWidth)}
+    >
+      <path d="M7.5 16.5 16.5 7.5" />
+      <path d="M9.5 7.5h7v7" />
+    </svg>
+  );
+}
+
 export function ChevronIcon({ size = 13, className, strokeWidth = 2.2 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base(strokeWidth)}>

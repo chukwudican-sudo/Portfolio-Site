@@ -6,6 +6,7 @@ import { Heatmap, HeatmapLegend, buildHeatmap } from "./Heatmap";
 import { StatNumber } from "./StatNumber";
 import {
   ActivityIcon,
+  ArrowUpRightIcon,
   CoffeeIcon,
   CodeIcon,
   ConnectIcon,
@@ -113,9 +114,7 @@ export function Snapshot() {
                 <LinkedinIcon className="shrink-0 text-accent-light" />
                 LinkedIn
               </span>
-              <span className="shrink-0 font-mono text-[12px] text-text-faint transition-colors duration-250 group-hover/link:text-accent-light">
-                ↗
-              </span>
+              <ArrowUpRightIcon size={12} className="shrink-0 text-text-faint transition-colors duration-250 group-hover/link:text-accent-light" />
             </a>
             <a
               href={github}
@@ -127,9 +126,7 @@ export function Snapshot() {
                 <GithubIcon className="shrink-0 text-accent-light" />
                 GitHub
               </span>
-              <span className="shrink-0 font-mono text-[12px] text-text-faint transition-colors duration-250 group-hover/link:text-accent-light">
-                ↗
-              </span>
+              <ArrowUpRightIcon size={12} className="shrink-0 text-text-faint transition-colors duration-250 group-hover/link:text-accent-light" />
             </a>
           </div>
         </div>
