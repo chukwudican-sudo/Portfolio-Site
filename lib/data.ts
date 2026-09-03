@@ -12,27 +12,31 @@ export type Project = {
   tech: string[];
   tags: string[];
   href: string;
+  /** The live product, when there is one to visit — distinct from the repo. */
+  liveHref?: string;
   span: "wide" | "narrow" | "full";
+  /** What the media slot shows when there is no video yet.
+   *  "building" — still being worked on
+   *  "soon"     — finished, footage still to record
+   *  "still"    — finished, nothing meaningful to film (a static panel is used) */
+  preview?: "building" | "soon" | "still";
 };
 
 export const projects: Project[] = [
   {
-    id: "resumi",
-    title: "Resumi",
-    subtitle: "AI Resume Tailoring",
-    badge: "Next.js",
+    id: "fraudwatch",
+    title: "FraudWatch",
+    subtitle: "Fraud & Anomaly Detection",
+    badge: "Java",
     description:
-      "An AI resume-tailoring platform. Four Claude call modes run under forced tool-use, so the model returns schema-constrained JSON rather than free text that has to be parsed and hoped over.",
+      "A live fraud and anomaly-detection dashboard, built as backend lead on a three-person team running a genuine two-week Agile sprint.",
     bullets: [
-      "Four REST endpoints backing four call modes — extract, extract_resume, tailor, instruct — each guaranteed to return valid typed data.",
-      "A pure-function LaTeX engine decouples content from formatting; single-pass escaping means user content can never break out of the document structure.",
-      "Server-side DOCX parsing written from scratch on JSZip and @xmldom/xmldom, with no third-party DOCX library.",
-      "A mock mode (RESUMI_MOCK=1) exercises the whole app end to end without touching the Claude API or costing anything.",
+      "Three detection algorithms: unusual amount measured against an account's historical average, impossible travel between two geographically incompatible transactions, and a sliding-window frequency check.",
+      "Owned the shared data contract between three independently built components — detection service, data simulator and dashboard.",
+      "GitHub Actions CI running the full test suite on every push.",
     ],
-    whatBroke:
-      "React's asynchronous state updates let a user navigate away before a write to localStorage had actually landed, so work silently disappeared. Fixed by making persistence synchronous and ordering it ahead of the state update.",
-    tech: ["TypeScript", "Next.js", "Node.js", "Claude API", "LaTeX"],
-    tags: ["frontend", "ai", "backend"],
+    tech: ["Java", "REST API", "GitHub Actions"],
+    tags: ["backend"],
     href: "https://github.com/chukwudican-sudo",
     span: "wide",
   },
@@ -57,24 +61,28 @@ export const projects: Project[] = [
     span: "narrow",
   },
   {
-    id: "fraudwatch",
-    title: "FraudWatch",
-    subtitle: "Fraud & Anomaly Detection",
-    badge: "Java",
+    id: "resumi",
+    title: "Resumi",
+    subtitle: "AI Resume Tailoring",
+    badge: "Next.js",
     description:
-      "A live fraud and anomaly-detection dashboard, built as backend lead on a three-person team running a genuine two-week Agile sprint.",
+      "An AI resume-tailoring platform. Four Claude call modes run under forced tool-use, so the model returns schema-constrained JSON rather than free text that has to be parsed and hoped over.",
     bullets: [
-      "Three detection algorithms: unusual amount measured against an account's historical average, impossible travel between two geographically incompatible transactions, and a sliding-window frequency check.",
-      "Owned the shared data contract between three independently built components — detection service, data simulator and dashboard.",
-      "GitHub Actions CI running the full test suite on every push.",
+      "Four REST endpoints backing four call modes — extract, extract_resume, tailor, instruct — each guaranteed to return valid typed data.",
+      "A pure-function LaTeX engine decouples content from formatting; single-pass escaping means user content can never break out of the document structure.",
+      "Server-side DOCX parsing written from scratch on JSZip and @xmldom/xmldom, with no third-party DOCX library.",
+      "A mock mode (RESUMI_MOCK=1) exercises the whole app end to end without touching the Claude API or costing anything.",
     ],
-    tech: ["Java", "REST API", "GitHub Actions"],
-    tags: ["backend"],
+    whatBroke:
+      "React's asynchronous state updates let a user navigate away before a write to localStorage had actually landed, so work silently disappeared. Fixed by making persistence synchronous and ordering it ahead of the state update.",
+    tech: ["TypeScript", "Next.js", "Node.js", "Claude API", "LaTeX"],
+    tags: ["frontend", "ai", "backend"],
     href: "https://github.com/chukwudican-sudo",
     span: "wide",
   },
   {
     id: "rate-limit-lab",
+    preview: "still",
     title: "Rate Limit Lab",
     subtitle: "Backend Systems Study",
     badge: "FastAPI",
@@ -94,6 +102,8 @@ export const projects: Project[] = [
   },
   {
     id: "kudi-kitchen",
+    liveHref: "https://kudikitchen.com",
+    preview: "soon",
     title: "Kudi Kitchen",
     subtitle: "E-Commerce & Security",
     badge: "No framework",
@@ -109,8 +119,7 @@ export const projects: Project[] = [
     tags: ["frontend", "backend", "security"],
     href: "https://github.com/chukwudican-sudo",
     span: "full",
-  },
-];
+  },];
 
 export const filters = [
   { id: "all", label: "All" },

@@ -3,8 +3,8 @@ import { Hero } from "@/components/Hero";
 import { Snapshot } from "@/components/Snapshot";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
-import { getPlacePhotos, getPostCovers, getRoleLogos } from "@/lib/assets";
-import { experience, posts } from "@/lib/data";
+import { getPlacePhotos, getPostCovers, getProjectClips, getRoleLogos } from "@/lib/assets";
+import { experience, posts, projects } from "@/lib/data";
 import { Writing } from "@/components/Writing";
 import { Places } from "@/components/Places";
 import { Contact } from "@/components/Contact";
@@ -15,6 +15,7 @@ export default function Home() {
   const roleLogos = getRoleLogos(experience.map((r) => r.id));
   const placePhotos = getPlacePhotos();
   const postCovers = getPostCovers(posts.map((p) => p.id));
+  const projectClips = getProjectClips(projects.map((p) => p.id));
 
   return (
     <div
@@ -50,7 +51,7 @@ export default function Home() {
       >
         <Hero />
         <Snapshot />
-        <ProjectsSection />
+        <ProjectsSection clips={projectClips} />
         <ExperienceSection logos={roleLogos} />
         <Writing covers={postCovers} />
         <Places photos={placePhotos} />

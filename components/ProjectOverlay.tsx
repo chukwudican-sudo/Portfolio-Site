@@ -8,10 +8,12 @@ export function ProjectOverlay({
   project,
   isMobile,
   onClose,
+  clips,
 }: {
   project: Project;
   isMobile: boolean;
   onClose: () => void;
+  clips?: string[];
 }) {
   return (
     <Overlay
@@ -20,7 +22,7 @@ export function ProjectOverlay({
       backLabel="All projects"
       onClose={onClose}
     >
-      <ProjectCard project={project} expanded />
+      <ProjectCard project={project} expanded clips={clips} />
     </Overlay>
   );
 }

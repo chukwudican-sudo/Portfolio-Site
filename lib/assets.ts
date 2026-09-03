@@ -89,3 +89,27 @@ export function getPostCovers(ids: string[]): Record<string, string> {
   }
   return out;
 }
+
+/**
+ * Preview clips for a project, in play order: `<id>.mp4`, then `<id>2.mp4`,
+ * `<id>3.mp4` and so on. Resolved on the server like the other assets, so a
+ * project with no footage falls back to its placeholder rather than 404ing.
+ */
+export function getProjectClips(ids: string[]): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const id of ids) {
+    const clips: string[] = [];
+    for (let n = 1; n <= 6; n++) {
+      const file = `${id}${n === 1 ? "" : n}.mp4`;
+      try {
+        if (fs.existsSync(path.join(ASSET_DIR, "projects", file))) {
+          clips.push(`/assets/projects/${file}`);
+        }
+      } catch {
+        /* unreadable dir — treat as absent */
+      }
+    }
+    if (clips.length) out[id] = clips;
+  }
+  return out;
+}

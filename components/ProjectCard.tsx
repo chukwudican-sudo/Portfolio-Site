@@ -3,7 +3,9 @@
 import { Fragment } from "react";
 import type { Project } from "@/lib/data";
 import { useOverflowMask } from "@/hooks/useOverflowMask";
-import { ImageSlot } from "./ImageSlot";
+import { ProjectClips } from "./ProjectClips";
+import { ProjectPending } from "./ProjectPending";
+import { ArrowUpRightIcon } from "./icons";
 
 // An even two-column grid, as in the reference. Percentage bases matter here:
 // pixel bases let a third card squeeze onto a row and strand the next one at
@@ -26,31 +28,46 @@ export function ProjectCard({
   project,
   expanded = false,
   index = 0,
+  clips,
   onOpen,
 }: {
   project: Project;
   expanded?: boolean;
+  /** preview clips, played in order and looped */
+  clips?: string[];
   /** position in the grid, used to stagger the reveal */
   index?: number;
   onOpen?: (id: string) => void;
 }) {
   const { ref: descRef, clamped } = useOverflowMask<HTMLParagraphElement>();
   const full = project.span === "full";
+  const hasClips = Boolean(clips?.length);
+  const still = project.preview === "still" ? `/assets/projects/${project.id}.png` : null;
 
   const media = (
     <div
-      className={`relative flex items-end bg-[linear-gradient(150deg,#33241D,#191413)] px-5 py-[18px] ${
-        expanded ? "aspect-[16/7]" : full ? "aspect-[21/6]" : "aspect-[16/8]"
+      className={`relative flex items-end overflow-hidden bg-[linear-gradient(150deg,#33241D,#191413)] px-5 py-[18px] ${
+        hasClips || still
+          ? "aspect-[16/9]"
+          : expanded
+            ? "aspect-[16/7]"
+            : full
+              ? "aspect-[21/6]"
+              : "aspect-[16/8]"
       }`}
     >
       <div
         aria-hidden
         className="absolute inset-0 bg-[radial-gradient(420px_240px_at_68%_20%,rgba(194,96,58,0.26),transparent_68%)]"
       />
-      <ImageSlot />
-      <p className="relative m-0 font-mono text-[10px] tracking-[0.1em] text-[rgba(242,237,228,0.5)] uppercase">
-        preview coming soon
-      </p>
+      {clips && clips.length > 0 ? (
+        <ProjectClips clips={clips} />
+      ) : still ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={still} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <ProjectPending label={project.preview === "soon" ? "Preview coming soon" : "In production"} />
+      )}
     </div>
   );
 
@@ -138,14 +155,26 @@ export function ProjectCard({
         ))}
       </div>
       {expanded ? (
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noopener"
-          className="font-mono text-[11.5px] tracking-[0.06em] text-accent-light uppercase"
-        >
-          Code on GitHub →
-        </a>
+        <span className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          {project.liveHref && (
+            <a
+              href={project.liveHref}
+              target="_blank"
+              rel="noopener"
+              className="font-mono text-[11.5px] tracking-[0.06em] text-accent-light uppercase"
+            >
+              {project.liveHref.replace(/^https?:\/\//, "")} <ArrowUpRightIcon size={12} className="inline-block" />
+            </a>
+          )}
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noopener"
+            className="font-mono text-[11.5px] tracking-[0.06em] text-text-dim uppercase transition-colors duration-250 hover:text-accent-light"
+          >
+            Code on GitHub →
+          </a>
+        </span>
       ) : (
         <span className="font-mono text-[11.5px] tracking-[0.06em] text-accent-light uppercase">
           View project →

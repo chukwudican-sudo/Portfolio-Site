@@ -490,3 +490,27 @@ a {
 .font-script {
   font-family: var(--font-script), ui-rounded, cursive;
 }
+
+/* Pixel hourglass on the project placeholders. steps(1) so grains blink out
+   and in rather than fading — smooth opacity would undo the pixel-art read. */
+@keyframes pf-drain {
+  0%, 45% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes pf-fill {
+  0%, 45% { opacity: 0; }
+  50%, 100% { opacity: 1; }
+}
+
+@keyframes pf-fall {
+  0% { transform: translateY(0); opacity: 1; }
+  75% { transform: translateY(4px); opacity: 1; }
+  100% { transform: translateY(4px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="pf-drain"], [style*="pf-fill"], [style*="pf-fall"] {
+    animation: none !important;
+  }
+}

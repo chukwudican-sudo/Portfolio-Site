@@ -6,11 +6,12 @@ import { filters, projects } from "@/lib/data";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectOverlay } from "./ProjectOverlay";
 
-export function ProjectsSection() {
+export function ProjectsSection({ clips = {} }: { clips?: Record<string, string[]> }) {
   const sectionRef = useReveal<HTMLElement>();
   const gridRef = useReveal<HTMLDivElement>();
   const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]["id"]>("all");
   const [openProjectId, setOpenProjectId] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const savedScroll = useRef(0);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -19,6 +20,14 @@ export function ProjectsSection() {
     activeFilter === "all" ? projects : projects.filter((p) => p.tags.includes(activeFilter));
 
   const openProject = filtered.find((p) => p.id === openProjectId) ?? projects.find((p) => p.id === openProjectId);
+
+  // Lead with the three strongest; the rest stay one click away rather than
+  // padding the grid. A filter narrows the list deliberately, so it opts out.
+  // `expandable` does not depend on showAll — otherwise the control vanishes
+  // once expanded and there is no way back to the short list.
+  const expandable = activeFilter === "all" && filtered.length > 3;
+  const shown = expandable && !showAll ? filtered.slice(0, 3) : filtered;
+  const hiddenCount = expandable ? filtered.length - 3 : 0;
 
   const handleOpen = (id: string) => {
     savedScroll.current = window.scrollY;
@@ -99,13 +108,30 @@ export function ProjectsSection() {
       </div>
 
       <div ref={gridRef} className="reveal-group flex flex-wrap gap-4 min-[701px]:gap-[22px]">
-        {filtered.map((project, i) => (
-          <ProjectCard key={project.id} project={project} index={i} onOpen={handleOpen} />
+        {shown.map((project, i) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            index={i}
+            clips={clips[project.id]}
+            onOpen={handleOpen}
+          />
         ))}
       </div>
 
+      {expandable && (
+        <button
+          type="button"
+          onClick={() => setShowAll((v) => !v)}
+          className="mt-1 inline-flex items-center justify-center gap-2 self-center rounded-full border border-[rgba(242,237,228,0.16)] px-[22px] py-[11px] text-[14px] text-text-secondary transition-colors duration-250 hover:border-[rgba(242,237,228,0.3)] hover:text-text-primary max-[700px]:min-h-11"
+        >
+          {showAll ? "Show less" : `More projects (${hiddenCount})`}
+        </button>
+      )}
+
       {openProject && (
-        <ProjectOverlay project={openProject} isMobile={isMobile} onClose={handleClose} />
+        <ProjectOverlay
+          clips={clips[openProjectId ?? ""]} project={openProject} isMobile={isMobile} onClose={handleClose} />
       )}
     </section>
   );
