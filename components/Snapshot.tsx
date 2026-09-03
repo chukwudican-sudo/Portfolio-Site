@@ -184,9 +184,12 @@ export function Snapshot() {
           </p>
         </div>
         <div
-          className="relative overflow-hidden"
+          // overflow-hidden clips at the padding box, and the tiles lift 3px
+          // with a shadow on hover — so the strip carries vertical padding to
+          // give that room, pulled back with margin so the layout is unchanged.
+          className="relative overflow-hidden py-[10px]"
           style={{
-            margin: "0 calc(-1 * clamp(24px,2.2vw,34px))",
+            margin: "-10px calc(-1 * clamp(24px,2.2vw,34px))",
             maskImage: "linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)",
             WebkitMaskImage: "linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)",
           }}
