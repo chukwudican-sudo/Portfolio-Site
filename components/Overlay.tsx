@@ -93,18 +93,18 @@ export function Overlay({
         ref={panelRef}
         className="fixed inset-0 z-[300] overflow-y-auto bg-surface"
       >
-        <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-[rgba(242,237,228,0.09)] bg-[rgba(16,14,13,0.92)] px-[18px] py-[14px] backdrop-blur-md">
+        <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-[rgba(242,237,228,0.09)] bg-[rgba(16,14,13,0.92)] px-[16.2px] py-[12.6px] backdrop-blur-md">
           <button
             ref={dismissRef}
             type="button"
             onClick={onClose}
-            className="inline-flex min-h-11 items-center gap-2 bg-transparent px-1 font-mono text-[11.5px] tracking-[0.07em] text-accent-light uppercase"
+            className="inline-flex min-h-11 items-center gap-2 bg-transparent px-1 font-mono text-[10.35px] tracking-[0.07em] text-accent-light uppercase"
           >
-            <span className="text-[15px] leading-none">←</span>
+            <span className="text-[13.5px] leading-none">←</span>
             {backLabel}
           </button>
         </div>
-        <div className="pb-[60px]">{children}</div>
+        <div className="pb-[54px]">{children}</div>
       </div>,
       document.body,
     );
@@ -112,7 +112,7 @@ export function Overlay({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[300] overflow-y-auto overscroll-contain bg-[rgba(8,7,7,0.72)] backdrop-blur-[10px]"
+      className="fixed inset-0 z-[300] overflow-y-auto overscroll-contain bg-[rgba(8,7,7,0.72)] backdrop-blur-[9px]"
       onMouseDown={(e) => {
         // desktop-only scrim dismiss; anything inside the panel is ignored
         if (!panelRef.current?.contains(e.target as Node)) onClose();
@@ -127,7 +127,7 @@ export function Overlay({
           aria-label={label}
           ref={panelRef}
           style={{ width: `min(${width}px, 100%)` }}
-          className="relative max-h-[86vh] overflow-y-auto overscroll-contain rounded-[14px] border border-[rgba(242,237,228,0.08)] bg-[#141211] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.9)]"
+          className="relative max-h-[86vh] overflow-y-auto overscroll-contain rounded-[12.6px] border border-[rgba(242,237,228,0.08)] bg-[#141211] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.9)]"
         >
           {/* zero-height sticky rail: keeps the dismiss pinned while the panel
               scrolls, without reserving a band of empty space above content */}
@@ -137,7 +137,7 @@ export function Overlay({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-[8px] border border-[rgba(242,237,228,0.11)] bg-[rgba(20,18,17,0.82)] text-[15px] leading-none text-[#B7AFA3] backdrop-blur-sm transition-colors duration-200 hover:border-[rgba(224,138,92,0.42)] hover:text-text-primary"
+              className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-[7.2px] border border-[rgba(242,237,228,0.11)] bg-[rgba(20,18,17,0.82)] text-[13.5px] leading-none text-[#B7AFA3] backdrop-blur-sm transition-colors duration-200 hover:border-[rgba(224,138,92,0.42)] hover:text-text-primary"
             >
               ✕
             </button>

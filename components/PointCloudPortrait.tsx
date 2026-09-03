@@ -47,7 +47,7 @@ export function PointCloudPortrait({
       )}
       <p
         ref={hintRef}
-        className="pointer-events-none absolute top-4 left-[18px] m-0 font-mono text-[10px] tracking-[0.1em] text-[rgba(242,237,228,0.42)] uppercase transition-opacity duration-[600ms] max-[700px]:hidden"
+        className="pointer-events-none absolute top-4 left-[16.2px] m-0 font-mono text-[9px] tracking-[0.1em] text-[rgba(242,237,228,0.42)] uppercase transition-opacity duration-[600ms] max-[700px]:hidden"
       >
         drag to rotate
       </p>

@@ -21,7 +21,7 @@ export function ProjectPending({ label = "In production" }: { label?: string }) 
   ];
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-[14px] bg-black">
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-[12.6px] bg-black">
       <svg width="60" height="60" viewBox="0 0 21 34" shapeRendering="crispEdges" aria-hidden>
         {/* frame */}
         <g fill="rgba(242,237,228,0.34)">
@@ -76,7 +76,7 @@ export function ProjectPending({ label = "In production" }: { label?: string }) 
         ))}
       </svg>
 
-      <p className="m-0 font-mono text-[10px] tracking-[0.16em] text-[rgba(242,237,228,0.42)] uppercase">
+      <p className="m-0 font-mono text-[9px] tracking-[0.16em] text-[rgba(242,237,228,0.42)] uppercase">
         {label}
       </p>
     </div>

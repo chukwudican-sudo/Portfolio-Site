@@ -15,9 +15,9 @@ export function CardEyebrow({
   className?: string;
 }) {
   return (
-    <div className={`flex items-center gap-[10px] ${className}`}>
+    <div className={`flex items-center gap-[9px] ${className}`}>
       <span className="shrink-0 text-accent-light">{icon}</span>
-      <p className="m-0 font-mono text-[11px] tracking-[0.12em] text-[#C8BFB2] uppercase">{children}</p>
+      <p className="m-0 font-mono text-[9.9px] tracking-[0.12em] text-[#C8BFB2] uppercase">{children}</p>
     </div>
   );
 }

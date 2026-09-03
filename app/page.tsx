@@ -47,7 +47,7 @@ export default function Home() {
 
       <main
         id="top"
-        className="relative z-10 flex w-full flex-col gap-[clamp(92px,11vh,164px)] px-4 sm:px-[max(28px,calc((100%-var(--content-max))/2))]"
+        className="relative z-10 flex w-full flex-col gap-[clamp(82.8px,11vh,147.6px)] px-4 sm:px-[max(28px,calc((100%-var(--content-max))/2))]"
       >
         <Hero />
         <Snapshot />

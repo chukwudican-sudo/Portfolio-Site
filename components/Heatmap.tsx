@@ -11,13 +11,13 @@ const legend = [
 export function Heatmap() {
   const { cells } = buildHeatmap();
   return (
-    <div className="grid grid-flow-col grid-rows-7 gap-[clamp(1.5px,0.3vw,3.5px)]">
+    <div className="grid grid-flow-col grid-rows-7 gap-[clamp(1.35px,0.3vw,3.15px)]">
       {cells.map((cell, i) => (
         <span
           key={i}
           title={cell.title}
           style={{ background: cell.color }}
-          className="aspect-square w-full min-w-0 rounded-[2.5px] transition-transform duration-200"
+          className="aspect-square w-full min-w-0 rounded-[2.25px] transition-transform duration-200"
         />
       ))}
     </div>
@@ -26,10 +26,10 @@ export function Heatmap() {
 
 export function HeatmapLegend() {
   return (
-    <div className="flex items-center gap-[9px] font-mono text-[10.5px] text-text-faint">
+    <div className="flex items-center gap-[8.1px] font-mono text-[9.45px] text-text-faint">
       <span>less</span>
       {legend.map((color) => (
-        <span key={color} style={{ background: color }} className="h-[11px] w-[11px] rounded-[2.5px]" />
+        <span key={color} style={{ background: color }} className="h-[9.9px] w-[9.9px] rounded-[2.25px]" />
       ))}
       <span>more</span>
     </div>
