@@ -6,6 +6,7 @@ import { useOverflowMask } from "@/hooks/useOverflowMask";
 import { ProjectClips } from "./ProjectClips";
 import { ProjectPending } from "./ProjectPending";
 import { ArrowUpRightIcon } from "./icons";
+import type { ProjectClip } from "@/lib/assets";
 
 // An even two-column grid, as in the reference. Percentage bases matter here:
 // pixel bases let a third card squeeze onto a row and strand the next one at
@@ -34,7 +35,7 @@ export function ProjectCard({
   project: Project;
   expanded?: boolean;
   /** preview clips, played in order and looped */
-  clips?: string[];
+  clips?: ProjectClip[];
   /** position in the grid, used to stagger the reveal */
   index?: number;
   onOpen?: (id: string) => void;
@@ -61,7 +62,7 @@ export function ProjectCard({
         className="absolute inset-0 bg-[radial-gradient(420px_240px_at_68%_20%,rgba(194,96,58,0.26),transparent_68%)]"
       />
       {clips && clips.length > 0 ? (
-        <ProjectClips clips={clips} />
+        <ProjectClips clips={clips} eager={expanded} />
       ) : still ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={still} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />

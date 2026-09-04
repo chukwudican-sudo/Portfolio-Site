@@ -5,8 +5,9 @@ import { useReveal } from "@/hooks/useReveal";
 import { filters, projects } from "@/lib/data";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectOverlay } from "./ProjectOverlay";
+import type { ProjectClip } from "@/lib/assets";
 
-export function ProjectsSection({ clips = {} }: { clips?: Record<string, string[]> }) {
+export function ProjectsSection({ clips = {} }: { clips?: Record<string, ProjectClip[]> }) {
   const sectionRef = useReveal<HTMLElement>();
   const gridRef = useReveal<HTMLDivElement>();
   const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]["id"]>("all");

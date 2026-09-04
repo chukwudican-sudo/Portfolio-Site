@@ -3,6 +3,7 @@
 import type { Project } from "@/lib/data";
 import { Overlay } from "./Overlay";
 import { ProjectCard } from "./ProjectCard";
+import type { ProjectClip } from "@/lib/assets";
 
 export function ProjectOverlay({
   project,
@@ -13,7 +14,7 @@ export function ProjectOverlay({
   project: Project;
   isMobile: boolean;
   onClose: () => void;
-  clips?: string[];
+  clips?: ProjectClip[];
 }) {
   return (
     <Overlay

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ProjectClip } from "@/lib/assets";
 
 /**
  * Plays a project's clips end to end, then loops back to the first.
@@ -8,17 +9,17 @@ import { useEffect, useRef, useState } from "react";
  * Every clip gets its own <video>, all preloaded, and switching is just an
  * opacity swap. A single element with a swapped `src` has to tear down and
  * reload between clips, and the card's background flashes through the gap.
- *
- * Nothing is fetched until the card is near the viewport: these are multi-
- * megabyte files and most of this site's traffic is on phones.
  */
-export function ProjectClips({ clips }: { clips: string[] }) {
+export function ProjectClips({ clips, eager = false }: { clips: ProjectClip[]; eager?: boolean }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [active, setActive] = useState(0);
-  const [armed, setArmed] = useState(false);
+  // The detail view is on screen the moment it opens, so it starts armed —
+  // waiting for an observer there just adds a beat of black before playback.
+  const [armed, setArmed] = useState(eager);
 
   useEffect(() => {
+    if (eager) return;
     const host = hostRef.current;
     if (!host) return;
     const io = new IntersectionObserver(
@@ -34,7 +35,7 @@ export function ProjectClips({ clips }: { clips: string[] }) {
     );
     io.observe(host);
     return () => io.disconnect();
-  }, [active]);
+  }, [active, eager]);
 
   useEffect(() => {
     if (!armed) return;
@@ -46,15 +47,19 @@ export function ProjectClips({ clips }: { clips: string[] }) {
 
   return (
     <div ref={hostRef} className="absolute inset-0">
-      {clips.map((src, i) => (
+      {clips.map((clip, i) => (
         <video
-          key={src}
+          key={clip.sd}
           ref={(el) => {
             videoRefs.current[i] = el;
           }}
-          src={src}
+          src={eager ? clip.hd : clip.sd}
+          // the first frame paints immediately, so there is no black hole while
+          // the file is still arriving
+          poster={clip.poster}
           muted
           playsInline
+          autoPlay={eager && i === 0}
           // no `loop`: looping one clip would never reach the next
           preload={armed ? "auto" : "none"}
           onEnded={() => setActive((n) => (n + 1) % clips.length)}

@@ -95,19 +95,30 @@ export function getPostCovers(ids: string[]): Record<string, string> {
  * `<id>3.mp4` and so on. Resolved on the server like the other assets, so a
  * project with no footage falls back to its placeholder rather than 404ing.
  */
-export function getProjectClips(ids: string[]): Record<string, string[]> {
-  const out: Record<string, string[]> = {};
+export type ProjectClip = { sd: string; hd: string; poster?: string };
+
+export function getProjectClips(ids: string[]): Record<string, ProjectClip[]> {
+  const out: Record<string, ProjectClip[]> = {};
+  const has = (f: string) => {
+    try {
+      return fs.existsSync(path.join(ASSET_DIR, "projects", f));
+    } catch {
+      return false;
+    }
+  };
   for (const id of ids) {
-    const clips: string[] = [];
+    const clips: ProjectClip[] = [];
     for (let n = 1; n <= 6; n++) {
-      const file = `${id}${n === 1 ? "" : n}.mp4`;
-      try {
-        if (fs.existsSync(path.join(ASSET_DIR, "projects", file))) {
-          clips.push(`/assets/projects/${file}`);
-        }
-      } catch {
-        /* unreadable dir — treat as absent */
-      }
+      const base = `${id}${n === 1 ? "" : n}`;
+      if (!has(`${base}.mp4`)) continue;
+      clips.push({
+        sd: `/assets/projects/${base}.mp4`,
+        // The detail view is 1020px wide — 2040 device px on a retina screen —
+        // so it gets a 1080p rendition. The card is a fraction of that size and
+        // keeps the small file, since most visitors never open the detail.
+        hd: has(`${base}-hd.mp4`) ? `/assets/projects/${base}-hd.mp4` : `/assets/projects/${base}.mp4`,
+        poster: has(`${base}-poster.jpg`) ? `/assets/projects/${base}-poster.jpg` : undefined,
+      });
     }
     if (clips.length) out[id] = clips;
   }
